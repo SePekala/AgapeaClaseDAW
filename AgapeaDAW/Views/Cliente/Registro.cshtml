@@ -1,0 +1,103 @@
+﻿@*
+    recibo como modelo del controlador un objeto de tipo Cliente...mapeo propiedades del objeto a las cajas de texto o
+    campos del formulario
+*@
+@model Cliente
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2><strong>Registrate en Agapea.com</strong></h2>
+            <p>Tienes tres opciones para registrarte en agapea.com. Tienes tres opciones para registrarte en agapea.com. y disfrutar de nuestros servicios y ventajas. </p>
+            <p>Puedes hacerlo a través de las redes sociales en 4 segundos. O registrarte con nosotros, no tardarás más de 40 segundos en hacerlo. Solo tendrás que rellenar el siguiente formulario con tus datos. </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p>Registro con <img src="~/images/agapea-logo.svg" width="186px" height="85px" /></p>
+        </div>
+    </div>
+    
+    <hr />
+    
+    <!-- ---------------------------resumen de errores de validacion-->
+    <div class="row">
+        <div class="col">
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+    </div>
+    <!-- ----------------------------------------------------------------- -->
+    <div class="row">
+        <div class="col">
+            <form asp-controller="Cliente" asp-action="Registro" method="post" class="row g-3">
+            
+              <div class="col-md-6">
+                <label for="inputEmail4" class="form-label">Correo Electronico:</label>                
+                <input type="email" class="form-control" id="inputEmail4" placeholder="mail@mail.com" asp-for="@Model.Credenciales.Email">
+                <span asp-validation-for="@Model.Credenciales.Email" class="text-danger"></span>
+              </div>
+              <div class="col-md-6">
+                <label for="inputEmail5" class="form-label">Repetir Correo Electronico:</label>
+                <input type="email" class="form-control" id="inputEmail5" placeholder="mail@mail.com" name="repEmail">
+              </div>
+
+              <div class="col-md-6">
+                <label for="inputPassword4" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="inputPassword4" placeholder="contraseña" asp-for="@Model.Credenciales.Password">
+                <span asp-validation-for="@Model.Credenciales.Password" class="text-danger"></span>
+              </div>
+              <div class="col-md-6">
+                <label for="inputPassword5" class="form-label">Repetir Contraseña</label>
+                <input type="password" class="form-control" id="inputPassword5" placeholder="repetir contraseña" name="repPassword">
+              </div>
+
+              <div class="col-md-6">
+                <label for="inputNombre" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="inputNombre" placeholder="mi nombre" asp-for="@Model.Nombre">
+                <span asp-validation-for="@Model.Nombre" class="text-danger"></span>
+              </div>
+              <div class="col-md-6">
+                <label for="inputApellidos" class="form-label">Apellidos:</label>
+                <input type="text" class="form-control" id="inputApellidos" placeholder="mis apellidos" asp-for="@Model.Apellidos">
+                <span asp-validation-for="@Model.Apellidos" class="text-danger"></span>
+              </div>
+
+              <div class="col-md-6">
+                <label for="inputLogin" class="form-label">Usuario:</label>
+                <input type="text" class="form-control" id="inputLogin" placeholder="nombre usuario o login" asp-for="@Model.Credenciales.Login">
+              </div>
+              <div class="col-md-6">
+                <label for="inputTelefono" class="form-label">Telefono:</label>
+                <input type="text" class="form-control" id="inputTelefono" placeholder="Mi telefono" asp-for="@Model.Telefono">
+                <span asp-validation-for="@Model.Telefono" class="text-danger"></span>
+              </div>
+
+              <p><small class="text-mutted">Agapea S.A se compromete a garantizar la seguridad de tus datos y a guardarlos en la más estricta confidencialidad.</small></p>
+              <hr>
+
+               <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="checkInfo">
+                  <label class="form-check-label" for="checkInfo">                    
+                    Deseo recibir información sobre libros, novedades y eventos de Agapea.com o sus librerías.                
+                  </label>
+                </div>
+              </div>
+
+               <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="checkCondiciones" name="condUso" value="true" checked>
+                  <label class="form-check-label" for="checkCondiciones">                    
+                    Acepto las condiciones de uso y nuestra politica de cookies.               
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg">REGISTRAME</button>
+              </div>
+            </form>
+        </div>
+    </div>
+</div>

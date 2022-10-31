@@ -1,0 +1,54 @@
+﻿@model Cuenta
+
+<div class="container pt-5">
+    <div class="row">
+        <div class="col-7 pt-3">
+            <h2>Registrate en <strong>agapea.com</strong></h2>
+            <p>Regístrate en agapea.com y disfruta de todos sus beneficios y comodidades.</p>
+
+            <div class="m-4">
+                <a class="btn btn-primary btn-lg" asp-controller="Cliente" asp-action="Registro">Registrate</a>
+            </div>
+
+            <p class="mt-4"><b>Crea tus propias listas de libros</b> (<a href="">Consultar información</a>)</p>
+
+            <div class="d-flex justify-content-center mt-5">
+                <img src="~/images/imagen-login.png" />
+            </div>
+        </div>
+        <div class="col-5 bg-light p-4 border">
+            
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <form asp-controller="Cliente" asp-action="Login" method="post">
+                <h4>Identifícate con:</h4>
+
+                <p>Usuario de <img src="~/images/agapea-logo.svg" alt="" width="123" height="60"></p>
+              
+                <div class="form-floating m-1">
+                  <input type="email" class="form-control" id="Email"  placeholder="Mi usuario" asp-for="@Model.Email"/>
+                  <span class="text-danger" asp-validation-for="@Model.Email"></span>
+                  <label for="floatingInput">Email</label>
+                </div>
+
+                <div class="form-floating m-1">
+                  <input type="password" class="form-control" id="Contraseña" placeholder="Contraseña" asp-for="@Model.Password"/>
+                  <span class="text-danger" asp-validation-for="@Model.Password"></span>
+                  <label for="floatingPassword"><small>Contraseña</small></label>
+                </div>
+
+
+                <div class="mt-2 ml-1">
+                    <a href=""><small class="text-mutted">¿Has olvidado tu contraseña?</small></a>
+                </div>
+
+                <button class="m-4 btn btn-lg btn-primary" type="submit">Identifícate</button>
+
+                <div class="ml-1">
+                    <p class="text-muted">Al identificarte, aceptas nuestras <a class="text-muted" href="">Condiciones de uso, y nuestras condiciones de cookies</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div> 

@@ -1,0 +1,13 @@
+﻿@model Direccion
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">@Model.Calle</h5>
+    <h6 class="card-subtitle mb-2 text-muted">@Model.IdDireccion</h6>
+
+    <p class="card-text">CP: @Model.CP, Municipio: @Model.LocalidadDirecc.DMUN50 (Provincia: @Model.ProvinciaDirecc.PRO, Pais: @Model.Pais)</p>
+
+    <button class="btn btn-outline-primary btn-sm" id="btnEditarDireccion_@Model.IdDireccion">Editar Direccion</button>
+    <button class="btn btn-outline-danger btn-sm" id="btnEliminarDireccion_@Model.IdDireccion">Eliminar Direccion</button>
+  </div>
+</div>

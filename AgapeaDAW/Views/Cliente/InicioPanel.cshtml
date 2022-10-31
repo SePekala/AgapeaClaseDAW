@@ -1,0 +1,351 @@
+﻿@model Cliente
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Mi perfil</h2>
+            <div></div><!--sangria-->
+            <div class="alert alert-secondary" data-bs-toggle="collapse" href="#collapseDatos">Datos de perfil</div>          
+            <div class="collapse" id="collapseDatos">
+
+                <form method="post" asp-controller="Cliente" asp-action="InicioPanel">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="row text-muted">Correo electrónico</div>
+                            <div class="row"><input type="text" id="inputEmail" class="input-group-text" style="width:90%" asp-for="@Model.Credenciales.Email" /></div>
+                            <div class="row text-muted">Contraseña</div>
+                            <div class="row"><input type="password" id="inputPass" class="input-group-text" style="width:90%" asp-for="@Model.Credenciales.Password"/></div>
+                            <div class="row text-muted">Nombre</div>
+                            <div class="row"><input type="text" id="inputNombre" class="input-group-text" style="width:90%" asp-for="@Model.Nombre"/></div>
+
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="row text-muted">Teléfono</div>
+                            <div class="row"><input type="text" id="inputTlfn" class="input-group-text" style="width:90%" asp-for="@Model.Telefono"/></div>
+                            <div class="row text-muted">Repetir la contraseña</div>
+                            <div class="row"><input type="password" id="inputPassRep" class="input-group-text" style="width:90%" /></div>
+                            <div class="row text-muted">Apellidos</div>
+                            <div class="row"><input type="text" id="inputApellidos" class="input-group-text" style="width:90% " asp-for="@Model.Apellidos"/></div>
+
+                        </div>
+                    </div>
+                    <div class="row"><span></span></div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="text-muted">Foto</div>
+                            <div id="avatarPerfil" class="card" style="width:200px;height:250px; background-color:aliceblue">
+                                <input type="file" accept="image/*" id="selectorImagen" name="imagen" style="visibility: hidden;"/>
+                                <a onclick="javascript: $('#selectorImagen').click()">
+                                    <!-- si en el src quieres usar el nombre del fihcero src="https://localhost:7152/images/uploads_imags/(arroba)Model.ImagenCuenta"-->
+                                    <img id="imagenUsuario" style="height:250px; width:200px;" src="@Model.Credenciales.ImagenCuentaBASE64" />
+                                </a>
+                            </div>
+                            <button type="button" class="btn btn-link btn-sm" id="botonUploadImagen" disabled>+ Sube una foto</button>
+                            <div id="mensajeServicioREST"></div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="row text-muted">Usuario</div>
+                            <div class="row"><input type="text" id="inputUsuario" class="input-group-sm" asp-for="@Model.Credenciales.Login" /></div>
+                            <div class="row text-muted">Genero</div>
+                            <div class="row">
+                                <select class="form-select" aria-label="Elige genero" asp-for="@Model.Genero">
+                                    <option selected>Elige genero</option>
+
+                                    <option value="H">Hombre</option>
+                                    <option value="M">Mujer</option>
+                                </select>
+                            </div>
+                            <div class="row text-muted">Fecha de nacimiento</div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <select name="dia" id="dia" class="form-select">
+                                        <option>Elige día</option>
+                                        @for(int a=1; a<=31; a++)
+                                        {
+                                            <option value="@a">@a</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <select name="mes" id="mes" class="form-select">
+                                        <option>Elige mes</option>
+                                        @foreach(KeyValuePair<String,String> elemento in ((Dictionary<String,String>)ViewData["_meses"]) )
+                                        {
+                                            <option value="@elemento.Key">@elemento.Value</option>
+                                        }
+
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <select name="anio" id="anio" class="form-select">
+                                        <option value="" selected="">Elige año</option>
+                                        @for(int a=2022; a >= 1923; a--)
+                                        {
+                                            <option value="@a">@a</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row text-muted">Descripcion</div>
+                            <div class="row"><textarea id="textArea" asp-for="@Model.Descripcion">@Model.Descripcion</textarea> </div>
+                            <div class="ro2 align-text-top"><a href=""> Darme de baja</a></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8"></div>
+                        <div class="col-4">
+                            <button type="submit" id="btnSubmitCliente" class="btn btn-primary btn-lg">Guardar Nuevos Datos del Cliente</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="alert alert-secondary" data-bs-toggle="collapse" href="#collapseDirecciones">Direcciones</div>
+            <div class="collapse" id="collapseDirecciones">
+                <div>
+                    <p> Guarda todas tus direcciones de envío y elige la que usarás por defecto donde llegarán tus pedidos.</p>
+
+                   <p> Estas son las direcciones a las que puedes hacer tus envíos. Las direcciones de envío serán las que elijas mientras que la
+                        facturación será la misma en todas las direcciones:
+                    </p>
+                </div>
+
+                <hr />
+                <!-- lista de direcciones del cliente -->
+                <div class="container">
+                    @foreach (Direccion unadirec in Model.MisDirecciones)
+                    {
+                        <partial name="_VistaMiniDireccion" model="unadirec"/>
+                    }
+                </div>
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                  + Nueva Direccion
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Nueva Direccion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                            <div class="container">
+                                <div class="row">
+                                    <p>Si desea que enviemos el pedido a una dirección distinta de la de facturación, modifique los campos a </p>
+                                    <p>continuación según proceda.</p>
+                                </div>
+                                <div class="row">
+                                    <!-- formulario de alta de direcciones -->
+                                    <form class="row g-3" asp-controller="Cliente" asp-action="OperaDireccion" method="post" id="formDirecciones">
+
+                                      <div class="col-12">
+                                        <label for="inputCalle" class="form-label">Direccion de Envio:</label>
+                                        <input type="text" class="form-control" id="inputCalle" placeholder="Mi Direccion" name="calle">
+                                      </div>
+
+                                      <div class="col-6">
+                                        <label for="inputCP" class="form-label">Codigo Postal:</label>
+                                        <input type="text" class="form-control" id="inputCP" placeholder="Codigo Postal: 28803" name="cp">
+                                      </div>
+                                      <div class="col-6">
+                                        <label for="inputPais" class="form-label">Pais:</label>
+                                        <input type="text" class="form-control" id="inputPais" placeholder="España" name="pais">
+                                      </div>
+                                      
+                                      
+                                      <div class="col-6">
+                                        <label for="inputProvincia" class="form-label">Provincia:</label>
+                                        <select id="inputProvincia" class="form-select" name="provincia">
+                                          <option value="0" selected> - Seleccionar Provincia - </option>
+                                          @foreach(Provincia unaprov in (List<Provincia>)ViewData["provincias"])
+                                          {
+                                              <option value="@String.Concat(unaprov.CPRO,"-",unaprov.PRO)">@unaprov.PRO</option>
+                                          }
+                                        </select>
+                                      </div>
+                                      <div class="col-6">
+                                        <label for="inputMunicipio" class="form-label">Municipio:</label>
+                                        <select id="inputMunicipio" class="form-select" disabled name="municipio">
+                                          <option value="0" selected>- Selecciona un Municipio -</option>
+                                        </select>
+                                      </div>
+
+                                       <hr />
+                                      <div class="col-12">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary" id="btnCrearDireccion">Crear Direccion</button>
+                                      </div>
+                                      <input type="hidden" id="operacion" name="operacion" value="crear"/>
+
+                                    </form>
+                                </div>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div> 
+
+<script>
+    //precargar la fecha de nacimiento en los select....
+    var fechaNac=new Date( JSON.parse('@Html.Raw(Json.Serialize(Model.FechaNacimiento))') );
+
+    $(`#dia > option[value=${fechaNac.getDate()} ]`).attr('selected','true');
+    $(`#mes > option[value=${fechaNac.getMonth()} ]`).attr('selected','true');
+    $(`#anio > option[value=${fechaNac.getFullYear()} ]`).attr('selected','true');
+
+
+    //evento CHANGE sobre el select PROVINCIA para hacer una peticion AJAX al servicio externo y recuperar los municipios de esa provincia
+    //https://apiv1.geoapi.es/municipios? CPRO=xxxx & type=JSON & key= & sandbox=1
+
+    $('#inputProvincia').change(
+                function(ev){
+                    var _cpro=ev.target.value.split('-')[0];
+                    if(_cpro != "0"){ //se ha seleccionado opcion difererente a - Seleccciona Provincia - 
+                        //haces pet.Ajax, recibes el resultado un JSON y en su prop .data esta el array de objetos JSON de tipo Municipio
+                        //te recorres ese array y con jquery añades un option al select municipio                       
+                        
+                        $('#inputMunicipio').removeAttr('disabled'); // <-- document.getElementById('inputMunicipios').removeAttribute('disabled');
+                        $.get(`https://apiv1.geoapi.es/municipios?CPRO=${_cpro}&type=JSON&key=&sandbox=1`)
+                         .done(
+                            resp => {
+                                    console.log('municipios recibidos, esta es la respuesta...', resp.data);
+
+                                    $('#inputMunicipio').empty();
+                                    $('#inputMunicipio').append('<option value="0" selected>- Selecciona un Municipio -</option>');
+
+                                    resp.data.forEach(
+                                        (el,pos,arr) => $('#inputMunicipio').append(`<option value=${el.CMUM}-${el.DMUN50}>${el.DMUN50}</option>`) 
+                                    );
+                            }   
+                         ) //then() de la promesa en jquery-ajax
+                         .fail(
+                            errores => {
+                                console.log('errores en la respuesta al intentar obtener municipios...', errores);
+                            }
+                         ) //catch() de la promesa en jquery-ajax
+                    }                    
+                }
+    );
+
+    // manejadores eventos sobre botones Editar Direccion....
+    $('button[id^="btnEditarDireccion_"]').click(
+        function(ev){
+            //para saber el boton q ha disparado evento: ev.target o con $(this)
+            var _idDireccion=$(this).attr('id').split('_')[1];
+
+            //tengo q acceder al modelo de la vista Cliente q el servidor nos ha mapeado, desde javascript
+            //para recuperar de la lista de direcciones el objeto Direccion asociado a ese _idDireccion
+            var _listaDirecciones='@Html.Raw(Json.Serialize(Model.MisDirecciones))';
+            var _direccionEditar=JSON.parse(_listaDirecciones).filter( (el,pos,arr)=> el.idDireccion==_idDireccion)[0];
+            
+            console.log(_direccionEditar);
+
+
+            var _modal=new bootstrap.Modal(document.getElementById('staticBackdrop'));
+            _modal.show();
+
+            //cargar los campos del formulario con los datos del objeto _direccionEditar y cambiar etiqueta del boton del formulario 
+            $('#inputCalle').val(_direccionEditar.calle);
+            $('#inputCP').val(_direccionEditar.cp);
+            $('#inputPais').val(_direccionEditar.pais);
+            //esto funciona si en el nombre de la provincia no apareciesen caracteres aleatorios "_"
+            //$('#inputProvincia').val(_direccionEditar.provincia.cpro + "-" + _direccionEditar.pro);
+            //busco el <option cuyo value sea "cpro-...." y pongo el attributo selected a true
+            $(`#inputProvincia > option[value^=${_direccionEditar.provinciaDirecc.cpro}]`).attr('selected','true');
+            
+            //disparo evento change mmanualmente sobre el select provincias para q me carge municipios (con jquery kaska)
+            document.getElementById('inputProvincia').dispatchEvent(new Event('change'));
+            
+            //pasa como en las provincias, si en el nombre de los municipios no apareciesen de forma aleatoria "_" funcionaria esto:
+            //$('#inputMunicpio').val(_direccionEditar.municipìo.cmum + "-" + _direccionEditar.municipio.dmun50);
+            //busco el <option cuyo value sea "cmum-...." y pongo el attributo selected a true
+            //OJO!!! hay q dar tiempo a q se recuperen municipios del servicio antes de seleccionar...
+
+            setTimeout( ()=>$(`#inputMunicipio > option[value^=${_direccionEditar.localidadDirecc.cmum}]`).attr('selected','true'), 5000);
+
+            //a ACTUALIZAR DIRECCION y cambio el hidden
+            $('#btnCrearDireccion').text('ACTUALIZAR DIRECCION');
+
+            $('#operacion').attr('value','modificar_' + _idDireccion);
+        }
+    );
+
+    //manejadores eventos sobre botones Borrar Direccion...
+    $('button[id^="btnEliminarDireccion_"]').click(
+        function(ev){
+                $('#operacion').attr('value','borrar_' + $(this).attr('id').split('_')[1]);
+                //asigno valor al select municipio para poder mandar algo de datos al controlador en variable municipio
+                $('#inputMunicipio').removeAttr('disabled');
+
+                $('#formDirecciones').submit();
+        }
+    );
+
+    //-------------------- seleccion imagen avatar cliente redimensionado y subida del fichero en MULTIPART-FORM-DATA --------
+    var fichSeleccionado;
+
+    function muestraRespuestaServer(resp){
+        $('#mensajeServicioREST').html(`<p><span class='text-danger'>${resp.mensaje}</span></p>`);
+    }
+
+    document.getElementById('selectorImagen').addEventListener('change',
+        function(ev){
+            fichSeleccionado=ev.target.files[0]; //fichero seleccionado por el cliente...
+            var reader=new FileReader();
+            
+            reader.addEventListener('load', function(evt){
+                    $('#imagenUsuario').attr('src',evt.target.result);
+                    $('#botonUploadImagen').removeAttr('disabled');
+
+                }
+            ); //evento LOAD del objeto FileReader para leer contenido del fichero imagen...
+
+            reader.readAsDataURL(fichSeleccionado);
+
+        }
+    ); //cierre eventlistener change del input-file
+
+    $('#botonUploadImagen').click(
+        function(ev){
+            //deshabilitar el boton antes, para evitar q el cliente haga clicks a tope...
+            $('#botonUploadImagen').attr('disabled','true');
+            var datos=new FormData();
+            datos.append('fichimagen',fichSeleccionado);
+
+            console.log(datos.get('fichimagen'));
+
+            $.ajax(
+                {
+                    url: 'https://localhost:7179/Cliente/UploadImagenFichero',
+                    method: 'POST',
+                    data: datos,
+                    processData: false,
+                    contentType: false 
+                }
+            )
+             .done(
+                (respuesta) => { 
+                        console.log(respuesta);
+                        muestraRespuestaServer(respuesta);
+                        $('#imagenUsuario').attr('src','https://localhost:7179/images/uploads_images/' + respuesta.otrosdatos);
+                         }
+             )
+             .fail(
+                (errores) => { console.log(errores); muestraRespuestaServer(errores); }
+             );            
+        }
+    );
+</script>

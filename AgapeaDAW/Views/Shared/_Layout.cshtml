@@ -1,0 +1,155 @@
+﻿
+@using AgapeaDAW.Models.Interfaces
+@using System.Text.Json
+
+@inject IBDAccess _servicioBD
+@{
+        List<Categoria> _listacats = _servicioBD.RecuperaCategorias("Raiz");
+        String _jsonCliente = Context.Session.GetString("datoscliente") ?? "";
+        
+        Cliente? _cliente = ! String.IsNullOrEmpty(_jsonCliente) ? JsonSerializer.Deserialize<Cliente>(_jsonCliente) : null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AgapeaDAW</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AgapeaDAW.styles.css" asp-append-version="true" />
+    
+    <!-- jquery libreria descomprimida -->
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    
+    <!-- font awesome -->
+    <script src="https://kit.fontawesome.com/cb407d7525.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="row">
+                <!-- botones de contacto y login/acceso a panel de usuario si esta usuario logueado -->
+                <div class="col-9" style="background-color:black"></div>
+                <div class="col-3" style="background-color:black">
+
+                    <!-- link acceso al panel Cliente o login en funcion si se le pasa desde el controlador variable de sesion a la vista...-->
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                        <a href="#" class="btn btn-dark btn-sm">
+                            <img src="~/images/botonMINIcontacto.png">
+                        </a>
+                        <!-- si hay un objeto sesion CLIENTE muestro el boton con su email y nombre y apellidos para q acceda a su PANEL, sino al LOGIN-->
+                        @if (_cliente != null)
+                        {
+                            <a asp-controller="Cliente" asp-action="InicioPanel" class="btn btn-dark btn-sm">
+                                Bienvenido: @_cliente.Nombre,@_cliente.Apellidos (@_cliente.Credenciales.Email)
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Cliente" asp-action="Login" class="btn btn-dark btn-sm">
+                                <img src="~/images/botonMINIlogin.png">
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="background-color:rgb(237,237,237)">
+                <div class="col-md-4">
+                    <!-- imagen de agapea mini -->
+                    <img src="~/images/logo_Agapea_layout.png" />
+                </div>
+
+                <div class="col-md-6">
+                    <!-- formulario de busqueda de libros -->
+                    <form asp-controller="Tienda" asp-action="BuscarLibros" method="post">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="cajatext" placeholder="Buscar por libro,autor,isbn..." aria-label="Buscar por libro,autor,isbn..." aria-describedby="botonBuscar">
+                            <div class="input-group-append">
+                                <a class="btn btn-outline-primary"
+                                   id="botonBuscar"
+                                   onclick="javascript:document.forms[0].submit()">
+                                    <img src="~/images/boton_BuscarLibros.png" />
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="optradio" value="Titulo">Titulo
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="optradio" value="Autor">Autor
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="optradio" value="Editorial">Editorial
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="optradio" value="ISBN10">ISBN
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-2">
+                    <!-- mini carrito -->
+                    <a asp-action="MostrarPedido" asp-controller="Pedido" class="btn btn-light">
+                        <img src="~/images/boton_mini_carrito.png" />
+                        <span class="badge badge-danger">0</span>
+                        <small>Total:</small>
+                        <img src="~/images/boton_flecha_minicarrito.png" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </header>
+
+    <div class="container">
+
+
+        <div class="row">
+            <div class="col-2">
+                <!-- panel de categorias raices -->
+
+                @if (_listacats.Count != 0 )
+                {
+                 <div class="list-group">
+
+                    @foreach (Categoria cat in _listacats)
+                   {
+                      <a href="#" class="list-group-item list-group-item-action">@cat.NombreCategoria</a>
+                   }
+                 </div>
+                }
+            </div>
+            <div class="col-10">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - AgapeaDAW - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- <script src="~/lib/jquery/dist/jquery.min.js"></script> -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
