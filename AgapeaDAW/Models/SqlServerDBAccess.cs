@@ -51,7 +51,7 @@ namespace AgapeaDAW.Models
                         {
                             _clienteADevolver.Credenciales.Login = _cursor["Login"].ToString() ?? "";
                             _clienteADevolver.Credenciales.Email = email;
-                            _clienteADevolver.Credenciales.IdCuenta = _cursor["IdCredencial"].ToString() ?? "";
+                            _clienteADevolver.Credenciales.IdCuenta = _cursor["IdCredenciales"].ToString() ?? "";
                             _clienteADevolver.Credenciales.CuentaActiva = System.Convert.ToBoolean(_cursor["CuentaActiva"]);
                             _clienteADevolver.Credenciales.ImagenCuenta = _cursor["ImagenCuenta"].ToString() ?? "";
                             _clienteADevolver.Credenciales.ImagenCuentaBASE64 = _cursor["ImagenCuentaBASE64"].ToString() ?? "";
@@ -315,7 +315,7 @@ namespace AgapeaDAW.Models
                 SqlConnection _conexionBD = new SqlConnection(this.CadenaConexion);
                 _conexionBD.Open();
 
-                SqlCommand _updateCuentas = new SqlCommand("UPDATE dbo.Cuentas SET ImagenCuenta=@img, ImagenCuentaBASE64=@img64 WHERE IdCredencial=@id AND IdCliente=@idc", _conexionBD);
+                SqlCommand _updateCuentas = new SqlCommand("UPDATE dbo.Cuentas SET ImagenCuenta=@img, ImagenCuentaBASE64=@img64 WHERE IdCredenciales=@id AND IdCliente=@idc", _conexionBD);
                 _updateCuentas.Parameters.AddWithValue("@img", nombreFichero);
                 _updateCuentas.Parameters.AddWithValue("@img64", base64Img);
                 _updateCuentas.Parameters.AddWithValue("@id", idCuenta);

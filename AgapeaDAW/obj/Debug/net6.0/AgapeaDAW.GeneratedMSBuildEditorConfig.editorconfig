@@ -8,65 +8,65 @@ build_property.PlatformNeutralAssembly =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AgapeaDAW
 build_property.RootNamespace = AgapeaDAW
-build_property.ProjectDir = C:\Users\pmr_a\source\repos\AgapeaDAW_2022_2023\AgapeaDAW\AgapeaDAW\
+build_property.ProjectDir = C:\Users\Usuario\Documents\GitHub\AgapeaClaseDAW\AgapeaDAW\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\pmr_a\source\repos\AgapeaDAW_2022_2023\AgapeaDAW\AgapeaDAW
+build_property.MSBuildProjectDirectory = C:\Users\Usuario\Documents\GitHub\AgapeaClaseDAW\AgapeaDAW
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Cliente/InicioPanel.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Cliente/InicioPanel.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxJbmljaW9QYW5lbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Cliente/Login.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Cliente/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Cliente/Registro.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Cliente/Registro.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxSZWdpc3Ryby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Cliente/RegistroOK.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Cliente/RegistroOK.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxSZWdpc3Ryb09LLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Home/Index.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Home/Privacy.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Shared/Error.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Shared/_VistaMiniDireccion.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Shared/_VistaMiniDireccion.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WaXN0YU1pbmlEaXJlY2Npb24uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Shared/_VistaMiniLibro.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Shared/_VistaMiniLibro.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WaXN0YU1pbmlMaWJyby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Tienda/RecuperaLibros.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Tienda/RecuperaLibros.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGllbmRhXFJlY3VwZXJhTGlicm9zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/_ViewImports.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/_ViewStart.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pmr_a/source/repos/AgapeaDAW_2022_2023/AgapeaDAW/AgapeaDAW/Views/Shared/_Layout.cshtml]
+[C:/Users/Usuario/Documents/GitHub/AgapeaClaseDAW/AgapeaDAW/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-chsor9htsg
