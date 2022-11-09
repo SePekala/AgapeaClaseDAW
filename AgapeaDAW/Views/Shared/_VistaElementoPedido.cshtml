@@ -1,0 +1,33 @@
+﻿@*
+    Recibe como modelo un objeto elemento pedido de tipo ItemPedido
+*@
+
+@model ItemPedido
+<table class="table table-borderless">
+    <tr>
+        <td rowspan="2"><img src="@Model.LibroItem.ImagenLibroBASE64" style="width: 30px;" /></td>
+        <td><label>@Model.LibroItem.Titulo</label></td>
+        <td>
+            <!--boton eliminar libro-->
+            <a asp-controller="Pedido" asp-action="EliminarPedidoLibro" asp-all-route-data="@(new Dictionary<String,String> { { "id", Model.LibroItem.ISBN13 } })" class="btn btn-light" style="color: red;">
+                <strong>X</strong>
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <!-- boton +, label cantidad, boton - y precio-->
+            <a asp-controller="Pedido" asp-action="RestarCantidadLibro" asp-all-route-data="@(new Dictionary<String,String> { { "id", Model.LibroItem.ISBN13 } })"  class="btn btn-primary btn-sm"> - </a>
+            <label>@Model.CantidadItem</label>
+
+            <a asp-controller="Pedido" asp-action="SumarCantidadLibro" asp-all-route-data="@(new Dictionary<String,String> { { "id", Model.LibroItem.ISBN13 } })" class="btn btn-primary btn-sm"> + </a>
+
+            <label> X <span style="color: red;">@Model.LibroItem.Precio€</span></label>
+        </td>
+
+        <td>
+            <!-- subtotal del libro-->
+            <label style="color: red;">@(Model.LibroItem.Precio * Model.CantidadItem) €</label>
+        </td>
+    </tr>
+</table>

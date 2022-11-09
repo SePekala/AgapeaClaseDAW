@@ -1,0 +1,402 @@
+﻿@*
+    Pintar los elementos del pedido actual y datos de pago
+*@
+
+@model Cliente
+@{
+	Direccion direccionprincipal = Model.MisDirecciones.Where((Direccion direc) => direc.EsPrincipal == true).Single<Direccion>();
+}
+
+
+	<div class="container">
+		<div class="row">
+			<!-- columna para direcciones y pago -->
+			<div class="col-8">
+				<form id="formpedido" method="post" asp-action="FinalizarPedido" asp-controller="Pedido">
+
+					<div class="container">
+						<div class="row mt-4">
+							<div class="col-1"><img src="~/images/img1_mostrar_pedido_datosentrega.png" style="width: 40px;height:26px;" /></div>
+							<div class="col-11"><h4><strong>1.- Datos de entrega</strong></h4></div>
+						</div>
+						<div class="row">
+
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="direccionradios" id="direccionprincipal" checked>
+								<label class="form-check-label" for="direccionprincipal">
+									@direccionprincipal.Calle. @direccionprincipal.LocalidadDirecc.DMUN50,
+									@direccionprincipal.ProvinciaDirecc.PRO CP: @direccionprincipal.CP. @direccionprincipal.Pais
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="direccionradios" id="direccionagapea" disabled>
+								<label class="form-check-label" for="direccionagapea">
+									Recoger en libreria Agapea (No disponible en este momento. Puede hacer el pedido para el envio a domicilio)
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="direccionradios" id="direccionotra">
+								<label class="form-check-label" for="direccionotra">
+									Recibir en otra direccion
+								</label>
+							</div>
+
+						</div>
+
+						<!-- campos para nueva direccion envio -->
+						<div class="row mt-2" id="filadireccioncontainer">
+
+							<div class="container" id="direccioncontainer">
+								<div class="row">
+									<div class="col-12">
+										<label for="inputCalle" class="form-label">Direccion de Envio:</label>
+										<input type="text" class="form-control" id="inputCalle" placeholder="Mi Direccion" name="calle">
+									</div>
+
+									<div class="col-6">
+										<label for="inputCP" class="form-label">Codigo Postal:</label>
+										<input type="text" class="form-control" id="inputCP" placeholder="Codigo Postal: 28803" name="cp">
+									</div>
+									<div class="col-6">
+										<label for="inputPais" class="form-label">Pais:</label>
+										<input type="text" class="form-control" id="inputPais" placeholder="España" name="pais">
+									</div>
+
+
+									<div class="col-6">
+										<label for="inputProvincia" class="form-label">Provincia:</label>
+										<select id="inputProvincia" class="form-select" name="provincia">
+											<option value="-1" selected> - Seleccionar Provincia - </option>
+											@foreach (Provincia prov in ViewData["provincias"] as List<Provincia>)
+											{
+												<option value="@prov.CPRO-@prov.PRO">@prov.PRO</option>
+											}
+											
+										</select>
+									</div>
+									<div class="col-6">
+										<label for="inputMunicipio" class="form-label">Municipio:</label>
+										<select id="inputMunicipio" class="form-select" name="municipio" disabled>
+											<option value="-1" selected> - Selecciona un Municipio -</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- ---------------------------------------------------------- -->
+
+						<div class="row mt-2">
+							<div class="container">
+								<div class="row">
+									<div class="col-6">
+										<label for="inputNombre" class="form-label">Nombre *</label>
+										<input type="text" class="form-control" id="inputNombre" name="nombre" value="@Model.Nombre">
+									</div>
+									<div class="col-6">
+										<label for="inputApellidos" class="form-label">Apellidos *</label>
+										<input type="text" class="form-control" id="inputApellidos" name="apellidos" value="@Model.Apellidos">
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<label for="inputEmail" class="form-label">Correo electronico *</label>
+										<input type="email" class="form-control" id="inputEmail" name="email" value="@Model.Credenciales.Email">
+									</div>
+									<div class="col-6">
+										<label for="inputTelefono" class="form-label">Telefono de contacto *</label>
+										<input type="text" class="form-control" id="inputTelefono" name="telefono" value="@Model.Telefono">
+									</div>
+								</div>
+								<div class="row">
+									<label for="inputOtrosDatos" class="form-label">Otros datos de entrega <span class="text-mutted"><small>(Max. 50 caracteres)</small></span></label>
+									<input type="text" class="form-control" id="inputOtrosDatos" name="otrosdatos">
+								</div>
+
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" value="" id="checkfactura">
+								<label class="form-check-label" for="checkfactura">
+									Deseo Factura
+								</label>
+							</div>
+						</div>
+						<!-- campos nif/cif para factura-->
+						<div class="row" id="filafacturacontainer">
+							<div class="container" id="facturacontainer">
+
+								<div class="row mt-4">
+									<div class="col-1"><img src="~/images/img2_mostrar_pedido_factura.png" style="width: 40px;height:26px;" /></div>
+									<div class="col-11"><h4><strong>2.- Datos para su factura</strong></h4></div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="datosfactura" id="datosfacturaempresa" checked>
+											<label class="form-check-label" for="datosfacturaempresa">
+												Empresa
+											</label>
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="datosfactura" id="datosfacturaparticular">
+											<label class="form-check-label" for="datosfacturaparticular">
+												Profesional, particular o autononmo
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-6">
+										<label for="inputEmpresa" class="form-label">Nombre de la empresa</label>
+										<input type="text" class="form-control" id="inputEmpresa" name="nombreEmpresa">
+									</div>
+									<div class="col-6">
+										<label for="inputCIF" class="form-label">CIF</label>
+										<input type="text" class="form-control" id="inputCIF" name="cifEmpresa">
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- ------------------------------------------------- -->
+
+						<div class="row mt-4">
+							<div class="col-1"><img src="~/images/im3_motrar_pedido_pago.png" style="width: 40px;height:26px;" /></div>
+							<div class="col-11" id="txtpago"><h4><strong>2.- Pago</strong></h4></div>
+						</div>
+						<div class="row">
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="pagoradios" id="pagotarjeta" checked>
+								<label class="form-check-label" for="pagotarjeta">
+									Pago con tarjeta
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="pagoradios" id="pagopaypal">
+								<label class="form-check-label" for="pagopaypal">
+									Pago mediante <img src="~/images/im3_motrar_pedido_pago_paypal.png" />
+								</label>
+							</div>
+
+						</div>
+						<!-- datos tarjeta si radio pagostarjeta checkeado-->
+						<div class="row mt-2">
+							<div class="container" id="datoscard" style="background:#ededed">
+								<div class="row"><h5>Datos de la tarjeta</h5></div>
+								<div class="row">
+									<div class="col-6">
+										<label for="inputNumero" class="form-label">Numero de tarjeta *</label>
+										<input type="text" class="form-control" id="inputNumero" name="numerocard">
+									</div>
+									<div class="col-3">
+										<label class="form-label" for="inputMes">Fecha de caducidad: Mes </label>
+										<select id="inputMes" class="form-select" name="mescard">
+											
+										</select>
+									</div>
+									<div class="col-2">
+										<label class="form-label" for="inputAnio">/ Año * </label>
+										<select id="inputAnio" class="form-select" name="aniocard">
+											
+										</select>
+									</div>
+									<div class="col-1">
+										<label for="inputCVV" class="form-label">CVV *</label>
+										<input type="text" class="form-control" id="inputCVV" name="cvv">
+									</div>
+								</div>
+								<div class="row">
+									<label for="inputNombreBanco" class="form-label">Nombre del Banco de la tarjeta</label>
+									<input type="text" class="form-control" id="inputNombreBanco" name="nombrebancocard">
+								</div>
+								<div class="row"><img src="~/images/im3_motrar_pedido_pago_tarjetas.png" style="width: 200px; height: 41px;"> Pago seguro 100% garantizado</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-3"></div>
+							<div class="col-9">
+								<a onclick="javascript:$('#formpedido').submit();"
+								   class="btn btn-primary btn-lg">
+									<i class="fa-solid fa-truck-fast"></i>  Finalizar Pedido
+								</a>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+			<!-- columna para elementos pedido -->
+			<div class="col-4">
+				<div class="container">
+					<div class="row">
+						<h5><strong>Resumen de la cesta</strong></h5>
+					</div>
+
+					@foreach (ItemPedido elemento in Model.PedidoActual.ElementosPedido)
+					{
+						<div class="row">
+							<partial name="_VistaElementoPedido" model="elemento"/>
+						</div>
+						
+					}
+					
+					<hr>
+					<div class="row">
+						<div class="col-10"><p><strong>SubTotal: </strong></p></div>
+						<div class="col-2"><span style="color:red;">@Model.PedidoActual.SubTotalPedido €</span></div>
+					</div>
+
+					<div class="row">
+						<div class="col-10"><p><strong>Gastos de envio y gestion: </strong></p></div>
+						<div class="col-2"><span style="color:red;">@Model.PedidoActual.GastosEnvio €</span></div>
+					</div>
+					<div class="row" style="background:#ededed;">
+						<div class="col-10"><p><strong>Total a pagar: </strong></p></div>
+						<div class="col-2"><span style="color:red;">@Model.PedidoActual.TotalPedido €</span></div>
+					</div>
+
+					<div class="row"><small>El periodo de entrega es de <span style="color:green;">1 a 7 dias laborales.</span></small></div>
+
+					<div class="row">
+						<div class="col-6">
+							<a asp-controller="Tienda" asp-action="RecuperaLibros"
+							   class="btn btn-outline-primary">
+								<i class="fa-solid fa-book"></i>  Seguir Comprando
+							</a>
+						</div>
+						<div class="col-6">
+							<a onclick="javascript:$('#formpedido').submit();"
+							   class="btn btn-primary">
+								<i class="fa-solid fa-truck-fast"></i>  Finalizar Pedido
+							</a>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+
+		var divfacturacontainer;
+		var divdireccioncontainer;
+		$(document).ready(
+			ev => {
+				divfacturacontainer = $('#facturacontainer').detach();
+				divdireccioncontainer = $('#direccioncontainer').detach();
+			}
+		)
+		//si seleccion otra direccion de entrega  muestro campos para nueva direccion...
+		$('input[name="direccionradios"]').change(
+			ev => {
+				console.log($(
+					ev.target
+				).next('label').text());
+				if ($(
+					ev.target
+				).next('label').text().trim().startsWith('Recibir')) {
+					divdireccioncontainer.appendTo($('#filadireccioncontainer'));
+				} else {
+					divdireccioncontainer = $('#direccioncontainer').detach();
+				}
+			}
+		);
+
+		//si chequeo el querer factura, activo cajas para q muestre nif o cif empresa
+		//tengo q cambiar las cajas de texto si es empresa o particular...q coñazo
+		$('#checkfactura').change(
+			function () {
+
+				if ($(this).is(':checked')) {
+					//$('#facturacontainer').attr('style','visibility:visible;');
+					divfacturacontainer.appendTo($('#filafacturacontainer'));
+					$('#txtpago strong').text("3.- Pago");
+
+				} else {
+					//$('#facturacontainer').attr('style','visibility:hidden;');
+					divfacturacontainer = $('#facturacontainer').detach();
+					$('#txtpago strong').text("2.- Pago");
+				}
+			}
+		);
+
+		$('input[name="datosfactura"]').change(
+			(ev) => {
+				if ($(
+					ev.target
+				).next('label').text().trim().startsWith('Empresa')) {
+					$('#inputEmpresa').prev('label').text('Apellidos y nombre');
+					$('#inputCIF').prev('label').text('CIF');
+
+				} else {
+					$('#inputEmpresa').prev('label').text('Apellidos y nombre');
+					$('#inputCIF').prev('label').text('NIF');
+				}
+			}
+		);
+
+		//si selecciono pago con paypal oculto el div. con al info del pago con tarjeta...
+		$('input[name="pagoradios"]').change(
+			(ev) => {
+				if ($(
+					ev.target
+				).next('label').text().trim().endsWith('tarjeta')) {
+					$('#datoscard').attr('style', 'visibility:visible;');
+				} else {
+					$('#datoscard').attr('style', 'visibility:hidden;');
+
+				}
+			}
+		);
+
+		//evento CHANGE sobre el select PROVINCIA para hacer una peticion AJAX al servicio externo y recuperar los municipios de esa provincia
+		//https://apiv1.geoapi.es/municipios? CPRO=xxxx & type=JSON & key= & sandbox=1
+
+		$('#inputProvincia').change(
+			function (ev) {
+				var _cpro = ev.target.value.split('-')[0];
+				if (_cpro != "0") { //se ha seleccionado opcion difererente a - Seleccciona Provincia -
+					//haces pet.Ajax, recibes el resultado un JSON y en su prop .data esta el array de objetos JSON de tipo Municipio
+					//
+					https://apiv1.geoapi.es/municipios
+				 ? CPRO = XXXXX & type=JSON & key=& sandbox=1
+					//te recorres ese array y con jquery añades un option al select municipio
+					$('#inputMunicipio').removeAttr('disabled');
+
+					var _petAjax = new XMLHttpRequest();
+					_petAjax.open('GET', `https://apiv1.geoapi.es/municipios?CPRO=${_cpro}&type=JSON&key=&sandbox=1`);
+					_petAjax.addEventListener('readystatechange', function (evajax) {
+						if (_petAjax.readyState == 4 && _petAjax.status == 200) {
+							var _respREST = JSON.parse(_petAjax.responseText);
+
+							//vaciar los option precargados... en variable nodo se carga cada option del select inputMunicipio
+							// <option value="xxx-nombre municpio">...</option> <=== nodo
+							Array.from(document.getElementById('inputMunicipio').children)
+								.forEach(nodo => document.getElementById('inputMunicipio').remove(nodo));
+
+							document.getElementById('inputMunicipio').append('<option value="-1">- Selecciona un Municipio -</option>');
+							_respREST.data.forEach(
+								(muni) => {
+									var option = document.createElement('option');
+									option.setAttribute('value', muni.CMUM + '-' + muni.DMUN50);
+									option.append(document.createTextNode(muni.DMUN50));
+
+									document.getElementById('inputMunicipio').append(option);
+								}
+							);
+						}
+					});
+					_petAjax.send();
+
+				}
+			}
+		);
+
+	</script>

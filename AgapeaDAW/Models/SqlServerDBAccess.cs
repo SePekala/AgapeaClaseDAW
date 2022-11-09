@@ -407,6 +407,41 @@ namespace AgapeaDAW.Models
         }
         #endregion
 
+        #region 3-metodos PedidoController
+        public Libro RecuperaLibroISBN(string isbn13)
+        {
+            try
+            {
+                SqlConnection _conexionBD = new SqlConnection(this.CadenaConexion);
+                _conexionBD.Open();
+
+                SqlCommand _selectLibro = new SqlCommand("SELECT * FROM dbo.Libros WHERE ISBN13=@id", _conexionBD);
+                _selectLibro.Parameters.AddWithValue("@id", isbn13);
+                return _selectLibro.ExecuteReader().Cast<IDataRecord>().Select((IDataRecord fila) => new Libro
+                {
+                    Titulo = fila["Titulo"].ToString(),
+                    Edicion = fila["Edicion"].ToString(),
+                    Editorial = fila["Editorial"].ToString(),
+                    Autores = fila["Autores"].ToString(),
+                    Dimensiones = fila["Dimensiones"].ToString(),
+                    IdCategoria = fila["IdCategoria"].ToString(),
+                    Idioma = fila["Idioma"].ToString(),
+                    ImagenLibro = fila["ImagenLibro"].ToString(),
+                    ImagenLibroBASE64 = fila["ImagenLibroBASE64"].ToString(),
+                    ISBN10 = fila["ISBN10"].ToString(),
+                    ISBN13 = fila["ISBN13"].ToString(),
+                    NumeroPaginas = System.Convert.ToInt32(fila["NumeroPaginas"].ToString()),
+                    Resumen = fila["Resumen"].ToString(),
+                    Precio = System.Convert.ToDecimal(fila["Precio"])
+                }).Single<Libro>();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        #endregion
+
 
         #endregion
 

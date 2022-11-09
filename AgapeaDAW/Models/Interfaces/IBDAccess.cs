@@ -27,6 +27,7 @@
         #region 2-metodos TiendaController
         public List<Libro> RecuperaLibros(String idcategoria);
         public List<Categoria> RecuperaCategorias(String idCategoria);
+        public Libro RecuperaLibroISBN(String isbn13);
         #endregion
 
         #endregion
