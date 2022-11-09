@@ -24,6 +24,20 @@
 
         #region ...metodos de la clase Pedido...
 
+        public void CalcularTotalPedido()
+        {
+            decimal _subtotal = 0;
+            foreach (ItemPedido item in ElementosPedido)
+            {
+                _subtotal += item.LibroItem.Precio * item.CantidadItem;
+            }
+
+            this.SubTotalPedido = _subtotal;
+
+            this.TotalPedido = this.SubTotalPedido + this.GastosEnvio;
+            
+        }
+
         #endregion
     }
 }

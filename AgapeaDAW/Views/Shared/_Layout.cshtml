@@ -30,7 +30,7 @@
 <body>
 
     <header>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <!-- botones de contacto y login/acceso a panel de usuario si esta usuario logueado -->
                 <div class="col-9" style="background-color:black"></div>
@@ -117,8 +117,7 @@
 
     </header>
 
-    <div class="container">
-
+    <div class="container-fluid">
 
         <div class="row">
             <div class="col-2">
@@ -136,7 +135,10 @@
                 }
             </div>
             <div class="col-10">
-                @RenderBody()
+                <div class="row">
+                    @RenderBody()
+                </div>
+                
             </div>
         </div>
     </div>

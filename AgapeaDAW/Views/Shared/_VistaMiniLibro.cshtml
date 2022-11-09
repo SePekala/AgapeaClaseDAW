@@ -1,30 +1,24 @@
 ﻿<!--
-    mininvista para representar los datos de un objeto Libro, con su imagen en miniatura, titulo, ... y un boton COMPRAR
+    mini vista para representar los datos de un objeto Libro, con su imagen en miniatura, titulo, ... y un boton COMPRAR
 -->
 @model Libro
 <div class="card mb-3" id="cardLibro-@Model.ISBN13">
   <div class="row g-0">
-    <div class="col-2">
-        <div class="container">
-            <div class="row mt-3">
-                    <a asp-controller="Tienda" asp-action="MostrarDetallesLibro" asp-all-route-data="@(new Dictionary<String,String>{ {"isbn13", Model.ISBN13}, {"titulo", Model.Titulo } } )">
-                        <img src="@Model.ImagenLibroBASE64" class="img-fluid rounded-start" width="100" height="150">
-                    </a>
-            </div>
-            <div class="row mt-3">
-                    <a id="btnComprar-@Model.ISBN13" 
-                        class="btn btn-primary btn-sm"
-                        style="visibility:hidden;"
-                        asp-controller="Pedido"
-                        asp-action="AddLibroPedido"
-                        asp-all-route-data="@( new Dictionary<String,String>{ {"id", Model.ISBN13} })">
+    <div class="col-md-4">
+            <a asp-controller="Tienda" asp-action="MostrarDetallesLibro" asp-all-route-data="@(new Dictionary<String,String>{ {"isbn13", Model.ISBN13}, {"titulo", Model.Titulo } } )">
+                <img src="@Model.ImagenLibroBASE64" class="img-fluid rounded-start" width="100" height="150">
+            </a>
+            <a id="btnComprar-@Model.ISBN13"
+                class="btn btn-primary btn-sm"
+                style="visibility:hidden;"
+                asp-controller="Pedido"
+                asp-action="AddLibroPedido"
+                asp-all-route-data="@( new Dictionary<String,String>{ {"id", Model.ISBN13} })">
 
-                        <i class="fa-solid fa-cart-shopping"></i> Comprar
-                    </a>
-            </div>
-        </div>
+                <i class="fa-solid fa-cart-shopping"></i> Comprar
+            </a>
     </div>
-    <div class="col-10">
+      <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">
             <a asp-controller="Tienda"

@@ -60,8 +60,7 @@ namespace AgapeaDAW.Controllers
             }
             catch (Exception)
             {
-
-                throw;
+                return Redirect("https://localhost:7179/Cliente/Login");
             }
         }
 
@@ -73,6 +72,7 @@ namespace AgapeaDAW.Controllers
             {
                 //pasar la variable sesion cliente a la vista y en el viewdata la lista de provincias para pintarlas en el form.de alta direccion nueva de envio
                 Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+                _cliente.PedidoActual.CalcularTotalPedido();
 
                 //tengo que cargar las provincias para pasarseslas a la vista... invoco servicio rest externo 
                 //https://apiv1.geoapi.es/provincias?type=JSON&key=&sandbox=1
@@ -101,21 +101,86 @@ namespace AgapeaDAW.Controllers
 
         public IActionResult SumarCantidadLibro(String id)
         {
-            return RedirectToAction("MostrarPedido");
+            try
+            {
+                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+
+                int _posicionLibro = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem)=> elem.LibroItem.ISBN13 == id);
+
+                if (_posicionLibro == -1)
+                {
+                    throw new Exception("No existe libro con ese isbn en el carrito");
+                }
+                else
+                {
+                    _cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem++;
+                }
+
+                HttpContext.Session.SetString("datoscliente", JsonSerializer.Serialize<Cliente>(_cliente));
+
+                return RedirectToAction("MostrarPedido");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpGet]
 
         public IActionResult RestarCantidadLibro(String id)
         {
-            return RedirectToAction("MostrarPedido");
+            try
+            {
+                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+
+                int _posicionLibro = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem) => elem.LibroItem.ISBN13 == id);
+
+                if (_posicionLibro == -1)
+                {
+                    throw new Exception("No existe libro con ese isbn en el carrito");
+                }
+                else
+                {
+                    if(_cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem > 1)
+                    {
+                        _cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem -= 1;
+                    }
+                }
+
+                HttpContext.Session.SetString("datoscliente",JsonSerializer.Serialize<Cliente>(_cliente));
+
+                return RedirectToAction("MostrarPedido");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpGet]
 
         public IActionResult EliminarPedidoLibro(String id)
         {
-            return RedirectToAction("MostrarPedido");
+            try
+            {
+                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+
+                int _posicionEliminar = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem) => elem.LibroItem.ISBN13 == id);
+                _cliente.PedidoActual.ElementosPedido.Remove(_cliente.PedidoActual.ElementosPedido[_posicionEliminar]);
+
+                HttpContext.Session.SetString("datoscliente",JsonSerializer.Serialize<Cliente>(_cliente));
+
+                return RedirectToAction("MostrarPedido");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
 
         #endregion
