@@ -1,56 +1,44 @@
 ﻿<!--
-    mini vista para representar los datos de un objeto Libro, con su imagen en miniatura, titulo, ... y un boton COMPRAR
+Miniista para representar los datos de un objeto Libro, con su imagen en miniatura, titulo,... y un boton COMPRAR
 -->
 @model Libro
-<div class="card mb-3" id="cardLibro-@Model.ISBN13">
-  <div class="row g-0">
-    <div class="col-md-4">
-            <a asp-controller="Tienda" asp-action="MostrarDetallesLibro" asp-all-route-data="@(new Dictionary<String,String>{ {"isbn13", Model.ISBN13}, {"titulo", Model.Titulo } } )">
-                <img src="@Model.ImagenLibroBASE64" class="img-fluid rounded-start" width="100" height="150">
-            </a>
-            <a id="btnComprar-@Model.ISBN13"
-                class="btn btn-primary btn-sm"
-                style="visibility:hidden;"
-                asp-controller="Pedido"
-                asp-action="AddLibroPedido"
-                asp-all-route-data="@( new Dictionary<String,String>{ {"id", Model.ISBN13} })">
 
-                <i class="fa-solid fa-cart-shopping"></i> Comprar
-            </a>
+
+<div class="mb-3" style="max-width: 540px;" id="cardLibro-@Model.ISBN13">
+    <div class="row g-0">
+        <div class="col-md-4 text-center" style="height: 170px">
+            <div class="w-100" style="height: 80%">
+                <a asp-controller="Tienda" asp-action="MostrarDetallesLibro" asp-all-route-data="@(new Dictionary<String,String>{{"isbn13", Model.ISBN13},{"titulo", Model.Titulo}})">
+                    <img src="@Model.ImagenLibroBASE64" class="img-fluid rounded-start rounded-end" alt="...">
+                </a>
+            </div>
+            <a class="btn btn-primary btn-sm" id="btnComprar-@Model.ISBN13" style="visibility: hidden;" asp-controller="Pedido" asp-action="AddLibroPedido" asp-all-route-data="@(new Dictionary<String,String>{{"id", Model.ISBN13} })">Comprar</a>
+        </div>
+        <div class="col-md-8">
+            <div class="ms-3">
+                <h6 class="card-title" style="height: 50px"><a class="text-decoration-none" asp-controller="Tienda" asp-action="MostrarDetallesLibro" asp-all-route-data="@(new Dictionary<String,String>{{"isbn13", Model.ISBN13},{"Titulo",Model.Titulo }})">@Model.Titulo</a></h6>
+                <div class="card-text">@Model.Autores</div>
+                <div class="card-text">@Model.Editorial</div>
+                <div class="card-text"><small class="text-muted">@Model.NumeroPaginas  páginas</small></div>
+                <div class="card-text"><strong>@Model.Precio €</strong></div>
+            </div>
+        </div>
     </div>
-      <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">
-            <a asp-controller="Tienda"
-                asp-action="MostrarDetallesLibro"
-                asp-all-route-data="@(new Dictionary<String,String>{ {"isbn13", Model.ISBN13}, {"Titulo", Model.Titulo } } )">
-                @Model.Titulo
-            </a>
-        </h5>
-        <p class="card-text" style="white-space: pre-line">
-            @Model.Autores
-            @Model.Editorial
-            <small class="text-muted">@Model.NumeroPaginas paginas</small>
-            <strong>@Model.Precio €</strong>
-        </p>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
     $('div[id^="cardLibro"]')
-    .mouseenter(
-        function(evt){
-            var _isbn=$(this).attr('id').split('-')[1];
-            $(`#btnComprar-${_isbn}`).attr('style','visibility:visible');
-        }
-    )
-    .mouseleave(
-            function(evt){
+        .mouseenter(
+            function (evt) {
+                var _isbn = $(this).attr('id').split('-')[1];
+                $(`#btnComprar-${_isbn}`).attr('style', 'visibility:visible');
+            }
+        )
+        .mouseleave(
+            function (evt) {
                 var _isbn = $(this).attr('id').split('-')[1];
                 $(`#btnComprar-${_isbn}`).attr('style', 'visibility:hidden');
             }
         );
 
-</script>                             
+</script>                        

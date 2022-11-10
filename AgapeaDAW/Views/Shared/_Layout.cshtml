@@ -125,7 +125,16 @@
                                                 <span class="visually-hidden">unread messages</span>
                                             </span>
                                         </div>
-                                        <span class="ps-2 pe-1"> <small>Total:</small> <span class="text-end" id="precioCarrito" style="width: 110px; font-size: 1.5em"><strong>0,00 €</strong></span></span>
+                                        @if (_cliente != null)
+                                        {
+                                            <span class="ps-2 pe-1"> <small>Total:</small> <span class="text-end" id="precioCarrito" style="width: 110px; font-size: 1.5em"><strong>@_cliente.PedidoActual.TotalPedido €</strong></span></span>
+                                            Console.WriteLine(_cliente.PedidoActual.TotalPedido);
+                                        }
+                                        else
+                                        {
+                                            <span class="ps-2 pe-1"> <small>Total:</small> <span class="text-end" id="precioCarrito" style="width: 110px; font-size: 1.5em"><strong>0.00€</strong></span></span>
+
+                                        }
 
                                         <img class="align-content-lg-center mx-2" src="~/images/boton_flecha_minicarrito.png" />
                                     </a>
@@ -153,7 +162,7 @@
                         <div class="list-group">
                             @foreach (Categoria cat in _listacats)
                             {
-                                <a href="#" class="list-group-item list-group-item-action border border-end-0 border-start-0 text-dark">@cat.NombreCategoria</a>
+                                <a href="https://localhost:7179/Tienda/RecuperaLibros/@cat.IdCategoria" class="list-group-item list-group-item-action border border-end-0 border-start-0 text-dark">@cat.NombreCategoria</a>
                             }
                         </div>
                     }

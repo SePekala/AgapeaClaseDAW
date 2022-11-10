@@ -52,7 +52,7 @@ namespace AgapeaDAW.Models
                             _clienteADevolver.Credenciales.Login = _cursor["Login"].ToString() ?? "";
                             _clienteADevolver.Credenciales.Email = email;
                             _clienteADevolver.Credenciales.IdCuenta = _cursor["IdCredenciales"].ToString() ?? "";
-                            _clienteADevolver.Credenciales.CuentaActiva = System.Convert.ToBoolean(_cursor["CuentaActivada"]);
+                            _clienteADevolver.Credenciales.CuentaActiva = System.Convert.ToBoolean(_cursor["CuentaActiva"]);
                             _clienteADevolver.Credenciales.ImagenCuenta = _cursor["ImagenCuenta"].ToString() ?? "";
                             _clienteADevolver.Credenciales.ImagenCuentaBASE64 = _cursor["ImagenCuentaBASE64"].ToString() ?? "";
                             _clienteADevolver.Credenciales.Password = "";

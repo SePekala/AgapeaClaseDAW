@@ -1,0 +1,125 @@
+﻿@using AgapeaDAW.Models.Interfaces
+
+@model Libro
+
+@inject IBDAccess _servicioBD
+@{
+    List<Categoria> _arbolCats = _servicioBD.RecuperaCategorias(Model.IdCategoria);
+}
+
+<div class="row mt-2">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb" style="font-size: small">
+            <li class="text-muted pe-2">Estas aquí: </li>
+            @foreach(Categoria cat in _arbolCats){
+                <li class="breadcrumb-item">
+                    <a class="text-decoration-none" asp-controller="Tienda" asp-action="RecuperaLibros" asp-all-route-data="@(new Dictionary<String,String>{{"id", cat.IdCategoria} })">@cat.NombreCategoria</a>
+                </li>
+            }
+                <li class="breadcrumb-item">
+                <span class="text-muted">@Model.Titulo, @Model.Autores</span>
+                </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-8">
+        <div class="mb-3" style="max-width: 540px;" id="cardLibro-@Model.ISBN13">
+            <div class="row g-0">
+                <div class="col-md-4" style="height: 170px">
+                    <div class="w-100" style="height: 80%">
+                        <a asp-controller="Tienda" asp-action="MostrarDetallesLibro" asp-all-route-data="@(new Dictionary<String,String>{{"ibn13", Model.ISBN13},{"titulo", Model.Titulo}})">
+                            <img src="@Model.ImagenLibroBASE64" class="img-fluid rounded-start" alt="...">
+                        </a>
+                    </div>
+                    <a class="btn btn-primary btn-sm" id="btnComprar-@Model.ISBN13" style="visibility: hidden;" asp-controller="Pedido" asp-action="AddLibroPedido" asp-all-route-data="@(new Dictionary<String,String>{{"id", Model.ISBN13} })">Comprar</a>
+                </div>
+                <div class="col-md-8 ps-1">
+                    <div class="ms-3">
+                        <h5 class="card-title">@Model.Titulo</h5>
+                        <h6 class="card-text">@Model.Autores</h6>
+                        <hr />
+                        <h6>Detalles del libro</h6>
+                        <div class="row">
+                            <div class="col-3">
+                                    <div class="card-text text-muted">Editorial</div>
+                                    <div class="card-text text-muted">Edición</div>
+                                    <div class="card-text text-muted">Páginas</div>
+                                    @if (Model.Dimensiones != "")
+                                    {
+                                        <div class="card-text text-muted">Dimensiones</div>
+                                    }
+                                    <div class="card-text text-muted">Idioma</div>
+                                    <div class="card-text text-muted">ISBN</div>
+                                    <div class="card-text text-muted">ISBN-10</div>
+                            </div>
+                            <div class="col-9 ps-4">
+                                    <div class="card-text">@Model.Editorial</div>
+                                    <div class="card-text">@Model.Edicion</div>
+                                    <div class="card-text">@Model.NumeroPaginas </div>
+                                    <div class="card-text">@Model.Dimensiones</div>
+                                    <div class="card-text">@Model.Idioma</div>
+                                    <div class="card-text">@Model.ISBN13</div>
+                                    <div class="card-text">@Model.ISBN10</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 px-0">
+        <div class="bg-light p-3 border border-1">
+            <div class="container bg-white border border-1 p-2">
+                <div class="d-flex flex-row-reverse align-items-end w-100">
+                    <h4 class="mx-2">€</h4><h2>@Model.Precio</h2>
+                </div>
+                <div class="container px-3">
+                    <div class="row">
+                        <div class="col-4 border border-2 border-primary d-flex align-items-center justify-content-center"><img src="~/images/iconoMiniBan.png" /></div>
+                        <div class="col-8 border border-2 border-primary border-start-0 d-flex flex-column justify-content-center p-2">
+                                <div class="d-flex justify-content-around"><span class="text-primary"><strong>Envío Gratis</strong><i class="fa-solid fa-circle-info mx-2"></i></span> </div>
+                                <div class="d-flex justify-content-around"><span class="text-primary"><small>al comprar este libro</small></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center py-3 px-1">
+                    <a class="btn btn-primary w-100 p-2" id="btnComprar-@Model.ISBN13" asp-controller="Pedido" asp-action="AddLibroPedido" asp-all-route-data="@(new Dictionary<String,String>{{"id", Model.ISBN13} })" style="border-radius: 0px"><i class="fa-solid fa-cart-shopping pe-2"></i><strong> Comprar / Recoger</strong></a>
+                </div>
+                <div class="d-flex flex-row justify-content-between px-1">
+                    <a class="btn btn-outline-primary p-2 flex-fill" id="btnListaDeseos-@Model.ISBN13" asp-controller="" asp-action="" asp-all-route-data="@(new Dictionary<String,String>{{"id", Model.ISBN13} })" style="border-radius: 0px"> <small>Agregar a la lista de deseos</small></a>
+                    
+                    
+                    <a id="despliega-listas" class="btn btn-outline-primary ms-2 border border-1 border-primary position-relative" id="btnLista-@Model.ISBN13" style="border-radius: 0px">
+                        <strong>:</strong>
+                        <div class="position-absolute top-100 start-0 visually-hidden" id="dropdown-listas" style="width: 150px">
+                            <div class="btn btn-outline-primary w-100" style="border-radius: 0px">Agregar nueva lista</div>
+                            <div class="btn btn-outline-primary border-top-0 w-100" style="border-radius: 0px">Ver más listas</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    $("#despliega-listas").click(function(ev){
+
+        if ($("#dropdown-listas").hasClass("visually-hidden")) {
+
+            $("#dropdown-listas").removeClass("visually-hidden");
+
+        }else{
+
+            $("#dropdown-listas").addClass("visually-hidden");
+        }       
+
+    });
+
+    
+</script>

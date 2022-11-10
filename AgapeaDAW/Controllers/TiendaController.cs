@@ -36,10 +36,12 @@ namespace AgapeaDAW.Controllers
 
 
         [HttpGet]
-        public IActionResult MostrarDetallesLibro([FromQuery] String isbn13, [FromQuery] String titulo)
+        public IActionResult MostrarDetallesLibro([FromQuery] String isbn13)
         {
             //recuperar de la bd el objeto Libro y pasarselo a la vista...
-            return View();
+            Libro _libro = this._servicioBD.RecuperaLibroISBN(isbn13);
+
+            return View(_libro);
         }
         #endregion
 
