@@ -1,19 +1,24 @@
 ﻿<!-- vista q recibe como modelo un array o lista de libros a pintar -->
 @model List<Libro>
 
-@if (Model.Count != 0)
-{
-    @foreach (Libro item in Model)
+
+<div class="row">
+    <h4 class="m-4">Libros más vendidos</h4>
+
+    @if (Model.Count == 0)
     {
-        <div class="col-4">
-            <partial name="_VistaMiniLibro" model="item" />
+        <div class="row text-danger">
+            <p>No se han encontrado Libros en esta Categoria</p>
         </div>
     }
+    else
+    {
+        @foreach (Libro item in Model)
+        {
+            <div class="col-4">
+                <partial name="_VistaMiniLibro" model="item">
+            </div>
+        }
+    }
 
-}
-else
-{
-    <div class="row">
-        <p>No se han encontrado LIBROS de esa categoria...intentalo de nuevo</p>
-    </div>
-}
+</div>

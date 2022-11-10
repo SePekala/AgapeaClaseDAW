@@ -66,4 +66,10 @@ app.MapControllerRoute(
 // cliente pone en navegador:  https://localhost:xxxx/ <------------------ https://localhost:xxxx/Home/Index/
 //                             https://localhost:xxxx/Cliente/Registro <---segmento1=Cliente(Controller), segmento2=Registro
 //                             https://localhost:xxxx/Tienda/DetallesLibro/1234325-X  <---segmento1=Tienda(Controller), segmento2=DetallesLibro, segmento3=id=123425-X
+
+
+//-------------ruta de 4 segmentos para el panel del cliente, nos facilita la tarea a la hora de ocultar el panel de opciones de cliente en layout
+app.MapControllerRoute(
+                name:"panelcliente",
+                pattern: "{controller=Cliente}/Panel/{action=InicioPanel}/{id?}");
 app.Run();

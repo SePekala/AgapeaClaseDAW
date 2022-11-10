@@ -170,6 +170,7 @@ namespace AgapeaDAW.Controllers
 
                 int _posicionEliminar = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem) => elem.LibroItem.ISBN13 == id);
                 _cliente.PedidoActual.ElementosPedido.Remove(_cliente.PedidoActual.ElementosPedido[_posicionEliminar]);
+                //_cliente.PedidoActual.ElementosPedido.RemoveAt(_posicionEliminar);
 
                 HttpContext.Session.SetString("datoscliente",JsonSerializer.Serialize<Cliente>(_cliente));
 
@@ -181,6 +182,32 @@ namespace AgapeaDAW.Controllers
                 throw;
             }
            
+        }
+
+        [HttpPost]
+        public IActionResult FinalizarPedido(Cliente datosCliente,
+                                             [FromForm] String direccionradios,
+                                             [FromForm] String calle,
+                                             [FromForm] String cp,
+                                             [FromForm] String pais,
+                                             [FromForm] String provincia,
+                                             [FromForm] String municipio,
+                                             [FromForm] String nombre,
+                                             [FromForm] String apellidos,
+                                             [FromForm] String email,
+                                             [FromForm] String telefono,
+                                             [FromForm] String otrosdatos,
+                                             [FromForm] String datosfactura,
+                                             [FromForm] String nombreEmpresa,
+                                             [FromForm] String cifEmpresa,
+                                             [FromForm] String pagoradios,
+                                             [FromForm] String numerocard,
+                                             [FromForm] String mescard,
+                                             [FromForm] String aniocard,
+                                             [FromForm] String cvv,
+                                             [FromForm] String nombrebancocard)
+        {
+            return View();
         }
 
         #endregion

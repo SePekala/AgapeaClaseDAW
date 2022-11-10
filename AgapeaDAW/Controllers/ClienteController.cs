@@ -162,7 +162,9 @@ namespace AgapeaDAW.Controllers
                     //si ok, almacenar el objeto Cliente en estado de sesion
                     //redirigimos al panel del cliente
                     HttpContext.Session.SetString("datoscliente", JsonSerializer.Serialize<Cliente>(_datosClienteBD));
-                    return RedirectToAction("InicioPanel");
+                    //return RedirectToAction("InicioPanel");
+
+                    return RedirectToRoute("panelcliente", new { controller = "Cliente", action = "InicioPanel" });
 
                 }
 

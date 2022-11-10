@@ -1,20 +1,20 @@
-﻿--create table dbo.Libros (
+﻿----create table dbo.Libros (
 
---        [IdCategoria] varchar(100) not null,
---        [ImagenLibro] varchar(100) null,
---        [ImagenLibroBASE64] varchar(max) null,
---        [Titulo]  varchar(200) not null,
---        [Editorial] varchar(200) not null,
---        [Autores]  varchar(200) not null,
---        [Edicion]  varchar(100) not null,
---        [NumeroPaginas] int,
---        [Dimensiones] varchar(50) null,
---        [Idioma] varchar(50) null,
---        [ISBN10] varchar(10) not null,
---        [ISBN13] varchar(20) not null primary key,
---        [Resumen] varchar(max) null,
---        [Precio] decimal(5,2) not null
---);
+----        [IdCategoria] varchar(100) not null,
+----        [ImagenLibro] varchar(100) null,
+----        [ImagenLibroBASE64] varchar(max) null,
+----        [Titulo]  varchar(200) not null,
+----        [Editorial] varchar(200) not null,
+----        [Autores]  varchar(200) not null,
+----        [Edicion]  varchar(100) not null,
+----        [NumeroPaginas] int,
+----        [Dimensiones] varchar(50) null,
+----        [Idioma] varchar(50) null,
+----        [ISBN10] varchar(10) not null,
+----        [ISBN13] varchar(20) not null primary key,
+----        [Resumen] varchar(max) null,
+----        [Precio] decimal(5,2) not null
+----);
 
 --insert into dbo.Libros values(
 --'2-10-1',
@@ -152,4 +152,4 @@
 --);
 
 
---select * from dbo.Libros;
+----select * from dbo.Libros;
