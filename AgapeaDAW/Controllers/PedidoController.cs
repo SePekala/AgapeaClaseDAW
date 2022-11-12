@@ -73,7 +73,6 @@ namespace AgapeaDAW.Controllers
             {
                 //pasar la variable sesion cliente a la vista y en el viewdata la lista de provincias para pintarlas en el form.de alta direccion nueva de envio
                 Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
-                _cliente.PedidoActual.CalcularTotalPedido();
 
                 //tengo que cargar las provincias para pasarseslas a la vista... invoco servicio rest externo 
                 //https://apiv1.geoapi.es/provincias?type=JSON&key=&sandbox=1
