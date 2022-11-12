@@ -44,17 +44,9 @@
               "target": "Package",
               "version": "[1.6.0, )"
             },
-            "IronPdf": {
-              "target": "Package",
-              "version": "[2022.11.10347, )"
-            },
             "Mailjet.Api": {
               "target": "Package",
               "version": "[3.0.0, )"
-            },
-            "Stripe.net": {
-              "target": "Package",
-              "version": "[40.16.0, )"
             },
             "System.Data.SqlClient": {
               "target": "Package",

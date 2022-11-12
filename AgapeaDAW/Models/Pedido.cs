@@ -5,9 +5,9 @@
         #region ...propiedades de la clase Pedido....
         //Subtotal, gastos de envio, Total, lista de libros + cantidades, fecha pedido, IdPedido, IdDireccionEnvio, IdDireccionFact
         public String IdPedido { get; set; } = Guid.NewGuid().ToString();
-        public Decimal SubTotalPedido { get => this.CalcularSubtotal(); }
+        public Decimal SubTotalPedido { get; set; } = 0;
         public Decimal GastosEnvio { get; set; } = 2;
-        public Decimal TotalPedido { get => this.SubTotalPedido + GastosEnvio; }
+        public Decimal TotalPedido { get; set; } = 0;
         public String IdDireccionEnvio { get; set; } = "";
         public String IdDireccionFacturacion { get; set; } = "";
 
@@ -24,9 +24,17 @@
 
         #region ...metodos de la clase Pedido...
 
-        public Decimal CalcularSubtotal()
+        public void CalcularTotalPedido()
         {
-            return this.ElementosPedido.Sum((ItemPedido item) => item.CantidadItem * item.LibroItem.Precio);
+            decimal _subtotal = 0;
+            foreach (ItemPedido item in ElementosPedido)
+            {
+                _subtotal += item.LibroItem.Precio * item.CantidadItem;
+            }
+
+            this.SubTotalPedido = _subtotal;
+
+            this.TotalPedido = this.SubTotalPedido + this.GastosEnvio;
             
         }
 
