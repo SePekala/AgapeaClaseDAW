@@ -104,26 +104,19 @@ namespace AgapeaDAW.Controllers
         {
             try
             {
-                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
-
-                int _posicionLibro = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem)=> elem.LibroItem.ISBN13 == id);
-
-                if (_posicionLibro == -1)
-                {
-                    throw new Exception("No existe libro con ese isbn en el carrito");
-                }
-                else
-                {
-                    _cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem++;
-                }
+                Cliente? _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente") ?? "");
+                //OJO!! SIEMPRE COMPROBAR Q EL ID VA UN ISBN13 DE UN LIBRO Q EXISTE EN EL PEDIDO, EN TEORIA ES ASI, PERO NO TIENE POR QUE
+                _cliente.PedidoActual.ElementosPedido.Find((ItemPedido item) => item.LibroItem.ISBN13 == id).CantidadItem++;
 
                 HttpContext.Session.SetString("datoscliente", JsonSerializer.Serialize<Cliente>(_cliente));
 
                 return RedirectToAction("MostrarPedido");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                if (ex.Source == "System.Text.Json") return RedirectToAction("Login", "Cliente");//ha caducado la variable de sesion
+                HttpContext.Session.SetString("errores", ex.Message);//<-- nunca se muestran en las vistas los mensajes de excepcion, mostrar mejor "Ha habido un fallo interno en el servidor"
+                return RedirectToAction("MostrarPedido");
                 throw;
             }
         }
@@ -134,29 +127,30 @@ namespace AgapeaDAW.Controllers
         {
             try
             {
-                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+                Cliente? _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente") ?? "");
+                //OJO!! SIEMPRE COMPROBAR Q EL ID VA UN ISBN13 DE UN LIBRO Q EXISTE EN EL PEDIDO, EN TEORIA ES ASI, PERO NO TIENE POR QUE
 
                 int _posicionLibro = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem) => elem.LibroItem.ISBN13 == id);
 
-                if (_posicionLibro == -1)
+                if (_posicionLibro == -1) throw new Exception("Libro con ISBN13 inexistente, no puedo quitar cantidad...");
+                if (_cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem == 1)
                 {
-                    throw new Exception("No existe libro con ese isbn en el carrito");
+                    return RedirectToAction("MostrarPedido");
                 }
                 else
                 {
-                    if(_cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem > 1)
-                    {
-                        _cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem -= 1;
-                    }
+                    _cliente.PedidoActual.ElementosPedido[_posicionLibro].CantidadItem -= 1;
                 }
 
                 HttpContext.Session.SetString("datoscliente",JsonSerializer.Serialize<Cliente>(_cliente));
 
                 return RedirectToAction("MostrarPedido");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                if (ex.Source == "System.Text.Json") return RedirectToAction("Login", "Cliente");//ha caducado la variable de sesion
+                HttpContext.Session.SetString("errores", ex.Message);//<-- nunca se muestran en las vistas los mensajes de excepcion, mostrar mejor "Ha habido un fallo interno en el servidor"
+                return RedirectToAction("MostrarPedido");
                 throw;
             }
         }
@@ -167,7 +161,8 @@ namespace AgapeaDAW.Controllers
         {
             try
             {
-                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+                Cliente? _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente") ?? "");
+                //OJO!! SIEMPRE COMPROBAR Q EL ID VA UN ISBN13 DE UN LIBRO Q EXISTE EN EL PEDIDO, EN TEORIA ES ASI, PERO NO TIENE POR QUE
 
                 int _posicionEliminar = _cliente.PedidoActual.ElementosPedido.FindIndex((ItemPedido elem) => elem.LibroItem.ISBN13 == id);
                 _cliente.PedidoActual.ElementosPedido.Remove(_cliente.PedidoActual.ElementosPedido[_posicionEliminar]);
@@ -177,16 +172,18 @@ namespace AgapeaDAW.Controllers
 
                 return RedirectToAction("MostrarPedido");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                if (ex.Source == "System.Text.Json") return RedirectToAction("Login", "Cliente");//ha caducado la variable de sesion
+                HttpContext.Session.SetString("errores", ex.Message);//<-- nunca se muestran en las vistas los mensajes de excepcion, mostrar mejor "Ha habido un fallo interno en el servidor"
+                return RedirectToAction("MostrarPedido");
                 throw;
             }
-           
+
         }
 
         [HttpPost]
-        public IActionResult FinalizarPedido(Cliente datosCliente,
+        public IActionResult FinalizarPedido(Cliente _cliente,
                                              [FromForm] String direccionradios,
                                              [FromForm] String calle,
                                              [FromForm] String cp,
@@ -212,6 +209,8 @@ namespace AgapeaDAW.Controllers
             // cliente con los datos de calle,cp,pais,provincia,municipio meterla en la bd tabla direcciones y en variable sesion
             // modificar direccion de envio del pedido actual a esta nueva direccion
 
+
+
             // los datos de contacto para entregar el pedido: nombre,apellido, email, telefono y otrosdatos si son diferentes de los del cliente ... yo no hago nada con ellos,
             // se pueden almacenar en una tabla de la bd de PersonasContacto pasando el id de cliente de la variable de session
 
@@ -221,62 +220,67 @@ namespace AgapeaDAW.Controllers
             // en pagoradios puede ir "pagopaypal" <--- usar api de paypal para el pago, "pagocard" <--- pago con tarjeta usando stripe, instalar NuGet: Stripe.net
 
             #region ...pago con stripe...
-            if (pagoradios == "pagocard")
+
+            StripeConfiguration.ApiKey = "sk_test_51M2dKCKBGYdXSACA4vwzykeAzQCxoqU69ADoRDdaeBaB4bOQUQNZG0rhrxg53zuQtRbV9eVvG45CwGi4NW6rxMsf00ViDKTGBs";
+            //1º paso ---nos creamos un objeto Customer
+            CustomerCreateOptions _optionsCustomer = new CustomerCreateOptions
             {
-                // 1º paso crear un objeto stripe de tipo Customer
-                StripeConfiguration.ApiKey = "sk_test_51M2dKCKBGYdXSACA4vwzykeAzQCxoqU69ADoRDdaeBaB4bOQUQNZG0rhrxg53zuQtRbV9eVvG45CwGi4NW6rxMsf00ViDKTGBs";
-
-                var nuevoCustomer = new CustomerCreateOptions
+                Email = _cliente.Credenciales.Email,
+                Name = _cliente.Nombre,
+                Phone = _cliente.Telefono,
+                Address = new AddressOptions
                 {
-                    Description = "Primer cliente de prueba",
-                    Email = email,
-                    Name = nombre,
-                    Address =
-                    {
-                        Country= pais,
-                        State= provincia,
-                        City= municipio,
-                        PostalCode= cp,
-                        Line1=calle
-                    },
-                    Phone = telefono
-
-                };
-                var serviceCustomer = new CustomerService();
-                serviceCustomer.Create(nuevoCustomer);
-
-                // 2º paso, crearse un TokenCard para asociarlo a la tarjeta de credito q va a usar el cliente (objeto Customer de stripe) para el pago <---datos de la tarjeta: 
-                // numero, fecha exp, cvv, nombre del propietario...
-                // con ese TokenCard generar un objeto stripe de tipo Card <--- necesitas el Id del TokenCard y el Id del objeto Customer
-                // para hacer pruebas usar numero de tarjeta: 4242 4242 4242 4242, fecha de exp posterior al año actual, y como cvv tres digitos cualesquiera
-
-                var tokenCard = new TokenCreateOptions
+                    //City = _direccion.LocalidadDirecc.DMUN50,
+                    //Country = _direccion.Pais,
+                    //PostalCode = _direccion.CP.ToString(),
+                    //State = _direccion.ProvinciaDirecc.PRO,
+                    //Line1 = _direccion.Calle
+                },
+                Metadata = new Dictionary<string, string> { { "id", _cliente.IdCliente }, { "fechaNacimiento", _cliente.FechaNacimiento.ToString() } }
+            };
+            Customer _customer = new CustomerService().Create(_optionsCustomer);
+            //2º paso añadirmos tajeta de credito al cliente...primero necesitamos un token para la tarjeta y despues se la asociamos al cliente
+            //2.1 -TOKEN card
+            TokenCreateOptions _optionsCardToken = new TokenCreateOptions
+            {
+                Card = new TokenCardOptions
                 {
-                    Card = new TokenCardOptions
-                    {
-                        Number = numerocard,
-                        ExpMonth = mescard,
-                        ExpYear = aniocard,
-                        Cvc = cvv,
-                    }
-                };
-                var serviceToken = new TokenService();
-                serviceToken.Create(tokenCard);
+                    Cvc = cvv,
+                    Name = _cliente.Nombre + _cliente.Apellidos,
+                    ExpMonth = mescard,
+                    ExpYear = aniocard,
+                    Number = numerocard
+                }
+            };
+            Token _tokencard = new TokenService().Create(_optionsCardToken);
 
-                //3º crearse un objeto de tipo Charge (cargo) <-- le tienes q pasar entre otras cosas la cantidad a cobrar, tipo de divisa, etc
-
-                var nuevoCargo = new ChargeCreateOptions
-                {
-                    Amount = 2000,
-                    Currency = "eur",
-                    Source = "tok_mastercard",
-                    Description = "Pago de prueba",
-                };
-                var serviceCharge = new ChargeService();
-                serviceCharge.Create(nuevoCargo);
+            //2.2 -CARD asociada al customer
+            CardCreateOptions _cardOptions = new CardCreateOptions
+            {
+                Source = _tokencard.Id
+            };
+            Card _card = new CardService().Create(_customer.Id, _cardOptions);
+            //3º paso, añadimos cargo a esa tarjeta del cliente con el importe del pedido OJO!! q se paga en centimos!!!
+            ChargeCreateOptions _chargeoptions = new ChargeCreateOptions
+            {
+                Amount = System.Convert.ToInt64(_cliente.PedidoActual.TotalPedido) * 100,
+                Currency = "eur",
+                Customer = _customer.Id,
+                Source = _card.Id,
+                Description = _cliente.PedidoActual.IdPedido
+            };
+            Charge _cargopedido = new ChargeService().Create(_chargeoptions);
+            if (_cargopedido.Status.ToLower() == "succeeded")
+            {
+                //meter en variable de sesion el _custormer.Id y _card.Id de stripe...para no tener q dar de alta continuamente al cliente y a la tarjeta
+                //meter en la bd, tabla de pedidos el pedido actual y en direccion la nueva direccion por si la quiere usar mas adelante
+                //actualizar variable de sesion cliente añadiendo el pedido al historico de pedidos
+                return RedirectToRoute("panelclientes", new { controller = "Cliente", action = "MisPedidos", id = _cliente.PedidoActual.IdPedido });
             }
-
-
+            else
+            {
+                throw new Exception("pago rechazado por la pasarela de pago, revisa los datos de tu tarjeta he intentalo de nuevo");
+            }
             #endregion
 
             // si el cargo del importe del pedido se ha pasado ok...generar factura en pdf con paquete Nuget: IronPdf, enviar correo al cliente adjuntando la factura 
