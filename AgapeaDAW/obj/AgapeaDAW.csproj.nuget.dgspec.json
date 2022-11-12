@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sergi\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj": {}
+    "C:\\Users\\Usuario\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sergi\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj": {
+    "C:\\Users\\Usuario\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sergi\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj",
+        "projectUniqueName": "C:\\Users\\Usuario\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj",
         "projectName": "AgapeaDAW",
-        "projectPath": "C:\\Users\\sergi\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj",
-        "packagesPath": "C:\\Users\\sergi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sergi\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\obj\\",
+        "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\AgapeaDAW.csproj",
+        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Usuario\\Documents\\GitHub\\AgapeaClaseDAW\\AgapeaDAW\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\sergi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -44,9 +44,17 @@
               "target": "Package",
               "version": "[1.6.0, )"
             },
+            "IronPdf": {
+              "target": "Package",
+              "version": "[2022.11.10347, )"
+            },
             "Mailjet.Api": {
               "target": "Package",
               "version": "[3.0.0, )"
+            },
+            "Stripe.net": {
+              "target": "Package",
+              "version": "[40.16.0, )"
             },
             "System.Data.SqlClient": {
               "target": "Package",
