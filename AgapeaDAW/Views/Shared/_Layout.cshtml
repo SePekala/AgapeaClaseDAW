@@ -121,14 +121,20 @@
                                         <div class="position-relative mx-2">
                                             <!--<img src="~/images/boton_mini_carrito.png" />--><i class="fa-solid fa-cart-shopping fa-xl"></i>
                                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                0
+                                                @if (_cliente != null)
+                                                {
+                                                    <span>@_cliente.PedidoActual.ElementosPedido.Count</span>
+                                                }
+                                                else 
+                                                {
+                                                    <span>0</span>
+                                                }
                                                 <span class="visually-hidden">unread messages</span>
                                             </span>
                                         </div>
                                         @if (_cliente != null)
                                         {
                                             <span class="ps-2 pe-1"> <small>Total:</small> <span class="text-end" id="precioCarrito" style="width: 110px; font-size: 1.5em"><strong>@_cliente.PedidoActual.TotalPedido €</strong></span></span>
-                                            Console.WriteLine(_cliente.PedidoActual.TotalPedido);
                                         }
                                         else
                                         {
