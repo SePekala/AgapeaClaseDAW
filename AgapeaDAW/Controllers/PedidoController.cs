@@ -2,6 +2,7 @@
 using AgapeaDAW.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System.Data.SqlClient;
 using System.Text.Json;
 
@@ -207,7 +208,81 @@ namespace AgapeaDAW.Controllers
                                              [FromForm] String cvv,
                                              [FromForm] String nombrebancocard)
         {
-            return View();
+            // si la variable direccionradios==otradireccion tengo q crear una nueva direccion en el
+            // cliente con los datos de calle,cp,pais,provincia,municipio meterla en la bd tabla direcciones y en variable sesion
+            // modificar direccion de envio del pedido actual a esta nueva direccion
+
+            // los datos de contacto para entregar el pedido: nombre,apellido, email, telefono y otrosdatos si son diferentes de los del cliente ... yo no hago nada con ellos,
+            // se pueden almacenar en una tabla de la bd de PersonasContacto pasando el id de cliente de la variable de session
+
+            // si datosfactura != null, es q quiere factura y puede valer "empresa" o "particular", esto influye en variables nombreEmpresa q si es un particular
+            // es el nombre y apellido del particular y en cifEmpresa q si es un particular es un NIF
+
+            // en pagoradios puede ir "pagopaypal" <--- usar api de paypal para el pago, "pagocard" <--- pago con tarjeta usando stripe, instalar NuGet: Stripe.net
+
+            #region ...pago con stripe...
+            if (pagoradios == "pagocard")
+            {
+                // 1º paso crear un objeto stripe de tipo Customer
+                StripeConfiguration.ApiKey = "sk_test_51M2dKCKBGYdXSACA4vwzykeAzQCxoqU69ADoRDdaeBaB4bOQUQNZG0rhrxg53zuQtRbV9eVvG45CwGi4NW6rxMsf00ViDKTGBs";
+
+                var nuevoCustomer = new CustomerCreateOptions
+                {
+                    Description = "Primer cliente de prueba",
+                    Email = email,
+                    Name = nombre,
+                    Address =
+                    {
+                        Country= pais,
+                        State= provincia,
+                        City= municipio,
+                        PostalCode= cp,
+                        Line1=calle
+                    },
+                    Phone = telefono
+
+                };
+                var serviceCustomer = new CustomerService();
+                serviceCustomer.Create(nuevoCustomer);
+
+                // 2º paso, crearse un TokenCard para asociarlo a la tarjeta de credito q va a usar el cliente (objeto Customer de stripe) para el pago <---datos de la tarjeta: 
+                // numero, fecha exp, cvv, nombre del propietario...
+                // con ese TokenCard generar un objeto stripe de tipo Card <--- necesitas el Id del TokenCard y el Id del objeto Customer
+                // para hacer pruebas usar numero de tarjeta: 4242 4242 4242 4242, fecha de exp posterior al año actual, y como cvv tres digitos cualesquiera
+
+                var tokenCard = new TokenCreateOptions
+                {
+                    Card = new TokenCardOptions
+                    {
+                        Number = numerocard,
+                        ExpMonth = mescard,
+                        ExpYear = aniocard,
+                        Cvc = cvv,
+                    }
+                };
+                var serviceToken = new TokenService();
+                serviceToken.Create(tokenCard);
+
+                //3º crearse un objeto de tipo Charge (cargo) <-- le tienes q pasar entre otras cosas la cantidad a cobrar, tipo de divisa, etc
+
+                var nuevoCargo = new ChargeCreateOptions
+                {
+                    Amount = 2000,
+                    Currency = "eur",
+                    Source = "tok_mastercard",
+                    Description = "Pago de prueba",
+                };
+                var serviceCharge = new ChargeService();
+                serviceCharge.Create(nuevoCargo);
+            }
+
+
+            #endregion
+
+            // si el cargo del importe del pedido se ha pasado ok...generar factura en pdf con paquete Nuget: IronPdf, enviar correo al cliente adjuntando la factura 
+            // almacenar pedido en la BD  en tabla Pedidos, actualizar variable de sesion cliente y redirigir a Panel --> MisPedidos
+
+            return RedirectToAction("RecuperaLibros", "Tienda");
         }
 
         #endregion
