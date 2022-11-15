@@ -12,10 +12,14 @@ namespace AgapeaDAW.Models
     {
         #region ...propiedades de la clase de acceso a datos contra SQL-Server...
 
-        public string CadenaConexion { get; set; } = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AgapeaDB2023;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        public string CadenaConexion { get; set; }
+        private IConfiguration _accesoappsettings; //<--- prop.de la clase para almacenar servicio inyectado de acceso a fichero appsettings.json
 
-
-
+        public SqlServerDBAccess(IConfiguration accesoappsettings)
+        {
+            _accesoappsettings = accesoappsettings;
+            this.CadenaConexion=_accesoappsettings.GetSection("ConnectionStrings:SqlServerConnectionString").Value;
+        }
         #endregion
 
         #region ...metodos de la clase de acceso a datos contra SQL-Server...

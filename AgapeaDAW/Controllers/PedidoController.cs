@@ -2,6 +2,7 @@
 using AgapeaDAW.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PayPal.Api;
 using Stripe;
 using System.Data.SqlClient;
 using System.Text.Json;
@@ -12,15 +13,16 @@ namespace AgapeaDAW.Controllers
     {
         #region ...propiedades de clase pedidocontroller...
         private IBDAccess _servicioBD;
-
+        private IConfiguration _accesoappsettings;
 
         #endregion
 
         #region ...metodos de clase pedidocontroller...
 
-        public PedidoController(IBDAccess servicioBDInyect)
+        public PedidoController(IBDAccess servicioBDInyect,IConfiguration accesoappsettings)
         {
-            this._servicioBD = servicioBDInyect; 
+            this._servicioBD = servicioBDInyect;
+            this._accesoappsettings = accesoappsettings;
         }
 
         [HttpGet]
@@ -182,7 +184,7 @@ namespace AgapeaDAW.Controllers
         }
 
         [HttpPost]
-        public IActionResult FinalizarPedido(Cliente _cliente,
+        public IActionResult FinalizarPedido(Cliente formcliente,
                                              [FromForm] String direccionradios,
                                              [FromForm] String calle,
                                              [FromForm] String cp,
@@ -208,7 +210,7 @@ namespace AgapeaDAW.Controllers
             // cliente con los datos de calle,cp,pais,provincia,municipio meterla en la bd tabla direcciones y en variable sesion
             // modificar direccion de envio del pedido actual a esta nueva direccion
 
-
+            Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
 
             // los datos de contacto para entregar el pedido: nombre,apellido, email, telefono y otrosdatos si son diferentes de los del cliente ... yo no hago nada con ellos,
             // se pueden almacenar en una tabla de la bd de PersonasContacto pasando el id de cliente de la variable de session
@@ -217,8 +219,9 @@ namespace AgapeaDAW.Controllers
             // es el nombre y apellido del particular y en cifEmpresa q si es un particular es un NIF
 
             // en pagoradios puede ir "pagopaypal" <--- usar api de paypal para el pago, "pagocard" <--- pago con tarjeta usando stripe, instalar NuGet: Stripe.net
-
-            #region ...pago con stripe...
+            if (pagoradios == "pagocard")
+            {
+                #region ...pago con stripe...
 
             StripeConfiguration.ApiKey = "sk_test_51M2dKCKBGYdXSACA4vwzykeAzQCxoqU69ADoRDdaeBaB4bOQUQNZG0rhrxg53zuQtRbV9eVvG45CwGi4NW6rxMsf00ViDKTGBs";
             //1º paso ---nos creamos un objeto Customer
@@ -280,7 +283,106 @@ namespace AgapeaDAW.Controllers
             {
                 throw new Exception("pago rechazado por la pasarela de pago, revisa los datos de tu tarjeta he intentalo de nuevo");
             }
-            #endregion
+                #endregion
+
+            }
+            else
+            {
+                #region ...pago con PayPal...
+                //el pago por paypal usa oAuth, protocolo de autentificacion externo
+                /*
+                         aplicacion asp.net core
+                         pedidocontroller -------redirecciona (con el cargo ya predefinido)--------> PayPal login
+                                          <---------------------------------------------------------
+                                                            token-usuario, si login ok
+                            token-usuario ------------------------cargo con id-pago----------------> cliente selecciona pago
+                         cancel-url,accept-url                                                       ACEPTAR O bien puede CANCELAR
+                                                                                                       ||                     ||-->paypal redirige a cancel-url
+                                                                                              paypal redirige a accept-url
+                 */
+                //1º paso obtener AccesToken de paypal una vez q el usuario se autentifique correctamente <-- objeto clase OAuthTokenCredential
+                //usando ese token, nos creamos un contexto de ejecucion de peticiones a la api paypal <-- objeto clase APIContext
+                OAuthTokenCredential _accesToken = new OAuthTokenCredential(
+                        this._accesoappsettings.GetSection("Paypal:ClienteId").Value,
+                        this._accesoappsettings.GetSection("Paypal:SecretKey").Value,
+                        new Dictionary<string, string>
+                        {
+                            { "mode", this._accesoappsettings.GetSection("Paypal:mode").Value},
+                            { "business", this._accesoappsettings.GetSection("Paypal:BussinessSandboxAccount").Value }
+                        }
+                    );
+
+                APIContext _apicontext = new APIContext(_accesToken.GetAccessToken());
+
+                //2º paso pasamos a paypal el pedido con las url de aceptacion y posible cancelacion del mismo
+                //los elementos del pedido se meten en un objeto clase ItemList de paypal. Tiene una propiedad, "items" q es la lista de objetos
+                //Item de paypal para cada elemento del pedido
+                //estos elementos del pedido, se meten en un objeto de tipo Payment
+
+                ItemList _itemsPayPal = new ItemList { items = new List<Item>() };
+
+                _cliente.PedidoActual
+                        .ElementosPedido
+                        .Select((ItemPedido item) => new Item { 
+                                name=item.LibroItem.Titulo,
+                                price=item.LibroItem.Precio.ToString().Replace(".",","),
+                                currency="EUR",
+                                quantity=item.CantidadItem.ToString(),
+                                sku=item.LibroItem.ISBN13.ToString(),
+                            }
+                        )
+                        .ToList<Item>()
+                        .ForEach((Item itempaypal) => _itemsPayPal.items.Add(itempaypal));
+
+                String _redirectURL = $"https://localhost:7179/Pedido/PayPalCallback/{_cliente.PedidoActual.IdPedido}";
+
+                Payment _cargo = new Payment
+                {
+                    intent = "sale",
+                    payer = new Payer { payment_method = "paypal" },
+                    redirect_urls = new RedirectUrls { cancel_url = _redirectURL + "&Cancel=true", return_url = _redirectURL },
+                    transactions = new List<Transaction>
+                    {
+                        new Transaction
+                        {
+                            description=$"Pedido de Agapea.com con id: {_cliente.PedidoActual.IdPedido} en fecha: {_cliente.PedidoActual.FechaPedido}",
+                            invoice_number=_cliente.PedidoActual.IdPedido,
+                            item_list=_itemsPayPal,
+                            amount= new Amount
+                                            {
+                                                currency="EUR",
+                                                total=_cliente.PedidoActual.TotalPedido.ToString().Replace(".",","),
+                                                details= new Details
+                                                {
+                                                    tax="0",
+                                                    shipping=_cliente.PedidoActual.GastosEnvio.ToString().Replace(".",","),
+                                                    subtotal=_cliente.PedidoActual.SubTotalPedido.ToString().Replace(".",",")
+                                                }
+                                            }
+                        }
+                    }
+                }.Create(_apicontext);
+
+                //3º paso meto en variable de sesion el APIContent pq lo voy a necesitar en la url de vuelta de paypal para saber como
+                //ha ido el pago y obtener detalles si quiero... tambien meto en variable de session el ID DEL CARGO DE PAYPAL
+                //redirecciono al cliente a paypal para q pague, se hace usando detro de la variable Payment de paypal, hay una propiedad
+                //que es links, q son enlaces a la api de paypal (es como un diccionario), hay un link "approval_url" q es el q tengo q usar
+                //para redireccionar
+
+                HttpContext.Session.SetString("cargoPayPal", _cargo.id);
+                HttpContext.Session.SetString("apicontextpaypal", JsonSerializer.Serialize<APIContext>(_apicontext));
+
+                String _urlPaypal = _cargo.links
+                                        .Where((Links linkpaypal) => linkpaypal.rel.ToLower() == "approval_url")
+                                        .Select((Links linkpaypal) => linkpaypal.href)
+                                        .Single<String>();
+
+                return Redirect(_urlPaypal);
+
+                #endregion
+
+            }
+
 
             // si el cargo del importe del pedido se ha pasado ok...generar factura en pdf con paquete Nuget: IronPdf, enviar correo al cliente adjuntando la factura 
             // almacenar pedido en la BD  en tabla Pedidos, actualizar variable de sesion cliente y redirigir a Panel --> MisPedidos
@@ -288,6 +390,37 @@ namespace AgapeaDAW.Controllers
             return RedirectToAction("RecuperaLibros", "Tienda");
         }
 
+
+        [HttpGet]
+        public IActionResult PayPallCallback([FromQuery] String PayerId,
+                                             [FromQuery] String guid,
+                                             [FromQuery] String Cancel = "false")
+        {
+            //recuperamos el apicontext de la variable de sesion
+            APIContext _apiContext = JsonSerializer.Deserialize<APIContext>(HttpContext.Session.GetString("apicontextpaypal"));
+
+            //si parametro Cancel="true" ha cancelado la compra el muy cabron...
+            if (Convert.ToBoolean(Cancel))
+            {
+                HttpContext.Session.SetString("errores", "Ha habido un error en el pago con PayPal, puedes finalizar la compra de tu pedido mas tarde o usando una tarjeta de credito valida");
+                return RedirectToAction("MostrarPedido");
+            }
+            //tengo que hacer efectivo el cargo aceptado por el cliente...usando objeto Payment
+            String _cargoId = HttpContext.Session.GetString("cargoPayPal");
+            Payment _pagoPedido = new Payment { id = _cargoId }.Execute(_apiContext, new PaymentExecution { payer_id = PayerId });
+
+            switch (_pagoPedido.state)
+            {
+                case "approved":
+
+                    break;
+
+                case "failed":
+
+                    break;
+
+            }
+        }
         #endregion
 
     }
