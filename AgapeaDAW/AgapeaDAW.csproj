@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="InfraEstructura\" />
     <Folder Include="wwwroot\images\portadas_libros\" />
     <Folder Include="wwwroot\images\uploads_images\" />
   </ItemGroup>

@@ -1,10 +1,12 @@
 ﻿using AgapeaDAW.Models;
 using AgapeaDAW.Models.Interfaces;
+using IronPdf;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayPal.Api;
 using Stripe;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Text.Json;
 
 namespace AgapeaDAW.Controllers
@@ -14,15 +16,17 @@ namespace AgapeaDAW.Controllers
         #region ...propiedades de clase pedidocontroller...
         private IBDAccess _servicioBD;
         private IConfiguration _accesoappsettings;
+        private IClienteEmail _clienteEmail;
 
         #endregion
 
         #region ...metodos de clase pedidocontroller...
 
-        public PedidoController(IBDAccess servicioBDInyect,IConfiguration accesoappsettings)
+        public PedidoController(IBDAccess servicioBDInyect,IConfiguration accesoappsettings, IClienteEmail clienteEmail)
         {
             this._servicioBD = servicioBDInyect;
             this._accesoappsettings = accesoappsettings;
+            this._clienteEmail = clienteEmail;
         }
 
         [HttpGet]
@@ -221,6 +225,7 @@ namespace AgapeaDAW.Controllers
             // en pagoradios puede ir "pagopaypal" <--- usar api de paypal para el pago, "pagocard" <--- pago con tarjeta usando stripe, instalar NuGet: Stripe.net
             if (pagoradios == "pagocard")
             {
+                /*
                 #region ...pago con stripe...
 
             StripeConfiguration.ApiKey = "sk_test_51M2dKCKBGYdXSACA4vwzykeAzQCxoqU69ADoRDdaeBaB4bOQUQNZG0rhrxg53zuQtRbV9eVvG45CwGi4NW6rxMsf00ViDKTGBs";
@@ -283,7 +288,7 @@ namespace AgapeaDAW.Controllers
             {
                 throw new Exception("pago rechazado por la pasarela de pago, revisa los datos de tu tarjeta he intentalo de nuevo");
             }
-                #endregion
+                #endregion*/
 
             }
             else
@@ -325,7 +330,7 @@ namespace AgapeaDAW.Controllers
                         .ElementosPedido
                         .Select((ItemPedido item) => new Item { 
                                 name=item.LibroItem.Titulo,
-                                price=item.LibroItem.Precio.ToString().Replace(".",","),
+                                price=item.LibroItem.Precio.ToString().Replace(",","."),
                                 currency="EUR",
                                 quantity=item.CantidadItem.ToString(),
                                 sku=item.LibroItem.ISBN13.ToString(),
@@ -348,16 +353,16 @@ namespace AgapeaDAW.Controllers
                             description=$"Pedido de Agapea.com con id: {_cliente.PedidoActual.IdPedido} en fecha: {_cliente.PedidoActual.FechaPedido}",
                             invoice_number=_cliente.PedidoActual.IdPedido,
                             item_list=_itemsPayPal,
-                            amount= new Amount
+                            amount= new Amount//OJO! SEPARADOR DECIMAL EL ".", Y NO MAS DE 2 DECIMALES, total=subtotal+shipping
                                             {
                                                 currency="EUR",
-                                                total=_cliente.PedidoActual.TotalPedido.ToString().Replace(".",","),
                                                 details= new Details
                                                 {
                                                     tax="0",
-                                                    shipping=_cliente.PedidoActual.GastosEnvio.ToString().Replace(".",","),
-                                                    subtotal=_cliente.PedidoActual.SubTotalPedido.ToString().Replace(".",",")
-                                                }
+                                                    shipping=_cliente.PedidoActual.GastosEnvio.ToString().Replace(",","."),
+                                                    subtotal=_cliente.PedidoActual.SubTotalPedido.ToString().Replace(",",".")
+                                                },
+                                                total=_cliente.PedidoActual.TotalPedido.ToString().Replace(",",".")
                                             }
                         }
                     }
@@ -387,12 +392,12 @@ namespace AgapeaDAW.Controllers
             // si el cargo del importe del pedido se ha pasado ok...generar factura en pdf con paquete Nuget: IronPdf, enviar correo al cliente adjuntando la factura 
             // almacenar pedido en la BD  en tabla Pedidos, actualizar variable de sesion cliente y redirigir a Panel --> MisPedidos
 
-            return RedirectToAction("RecuperaLibros", "Tienda");
+            return View();
         }
 
 
         [HttpGet]
-        public IActionResult PayPallCallback([FromQuery] String PayerId,
+        public IActionResult PayPalCallback([FromQuery] String PayerId,
                                              [FromQuery] String guid,
                                              [FromQuery] String Cancel = "false")
         {
@@ -412,15 +417,110 @@ namespace AgapeaDAW.Controllers
             switch (_pagoPedido.state)
             {
                 case "approved":
+                    //generar pdf de factura y mandar por email
+                    //guardar direccion y datos de envio cuando ya hemos comprobado el pago
+                    this.GenerarFacturaPDF(guid);
+
+                    return RedirectToAction("FinalizarPedidoOK", new { id = guid });
 
                     break;
 
                 case "failed":
-
+                    HttpContext.Session.SetString("errores", "Ha habido un error en el pago con PayPal, puedes finalizar la compra de tu pedido mas tarde o usando una tarjeta de credito valida");
+                    return RedirectToAction("MostrarPedido");
+                        
                     break;
 
             }
+            return View();
         }
+
+        [HttpGet]
+        public IActionResult FinalizarPedidoOK(String id)
+        {
+            //en id va el id del pedido finalizado...
+            Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+            Pedido _pedidoactual = _cliente.PedidoActual;
+
+            //destruyo ya el pedidoactual y lo dejo vacio para q el cliente pueda seguir comprando con otro pedido...
+            _cliente.MisPedidos.Add(_cliente.PedidoActual);
+            _cliente.PedidoActual = new Pedido();
+
+            //actualizo variable de sesion
+            HttpContext.Session.SetString("datoscliente",JsonSerializer.Serialize<Cliente>(_cliente));
+
+            return View(_pedidoactual);
+        }
+        #endregion
+
+        #region ...metodos privados de la clase(no originan vistas)...
+        private void GenerarFacturaPDF(String idpedido)
+        {
+            try
+            {
+                Cliente _cliente = JsonSerializer.Deserialize<Cliente>(HttpContext.Session.GetString("datoscliente"));
+
+                String _items = "";
+                _cliente.PedidoActual.ElementosPedido.ForEach(
+                    (ItemPedido item) =>
+                    {
+                        decimal _subtotal = item.LibroItem.Precio * item.CantidadItem;
+
+                        _items += "<tr>";
+                        _items += $"<td>{item.LibroItem.Titulo}</td>";
+                        _items += $"<td>{item.LibroItem.Precio.ToString()}</td>";
+                        _items += $"<td>{item.CantidadItem}</td>";
+                        _items += $"<td>{_subtotal.ToString()}</td>";
+                        _items += "</tr>";
+                    }    
+                );
+
+                String _factura = $@"
+                    <div>
+                        <h3><strong>RESUMEN DEL PEDIDO CON ID: {idpedido}</strong></h3> con fecha {_cliente.PedidoActual.FechaPedido.ToString()}
+                    </div>
+                    <hr/>
+                    <div>
+                        <p> A continuacion le mostramos un resumen detallado de su pedido en AGAPEA.COM</p>
+                        <table>
+                            <tr>                            
+                                <td>Titulo</td>
+                                <td>Precio</td>
+                                <td>Cantidad</td>
+                                <td>Subtotal</td>
+                            </tr>
+                            {_items}
+                        </table>  
+                    </div>
+                    </hr> 
+
+                    <div>
+                        <p><strong>Subtotal del pedido: {_cliente.PedidoActual.SubTotalPedido} €</strong></p>
+                        <p>Gastos de envio: {_cliente.PedidoActual.GastosEnvio} €</p>
+                        <p><h3><strong>TOTAL del pedido: {_cliente.PedidoActual.TotalPedido} €</strong></h3></p>
+                    </div>
+
+                ";
+                ChromePdfRenderer _renderIRONPDF = new IronPdf.ChromePdfRenderer();
+                PdfDocument _facturaPDF = _renderIRONPDF.RenderHtmlAsPdf(_factura);
+
+                _facturaPDF.SaveAs($"~/factura__{_cliente.IdCliente}__{idpedido}.pdf");
+                this._clienteEmail.EnviarEmail(
+                                               _cliente.Credenciales.Email, 
+                                               "Pedido realizado correctamente en Agapea.com",
+                                               _factura, 
+                                               $"~/InfraEstructura/facturasPDF/factura__{_cliente.IdCliente}__{idpedido}.pdf"
+                                               );
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+
+
         #endregion
 
     }

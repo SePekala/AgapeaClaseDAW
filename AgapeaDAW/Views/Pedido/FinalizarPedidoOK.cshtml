@@ -1,0 +1,27 @@
+﻿@model Pedido
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<img src="~/images/payment_success.png" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<p><h3><strong>Pago del pedido con id: @Model.IdPedido realizado correctamente</strong></h3></p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<p>Has pagado @Model.TotalPedido€ en fecha @Model.FechaPedido por tus libros de Agapea.com.</p>
+			<p> Se te ha mandado un email con la factura del mismo (consulta la bandeha de Correo no deseado o Spam por si acaso).</p>
+			<p>Accede al panel del usuario para ver tu lista de pedidos hechos en la tienda.</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-6"></div>
+		<div class="col-6"> <a class="btn btn-success btn-lg" asp-route="panelcliente" asp-all-route-data="@(new Dictionary<string,string>{ {"controller","Cliente"},{"action","MisPedidos"} })">IR A MIS PEDIDOS</a></div>
+	</div>
+</div>

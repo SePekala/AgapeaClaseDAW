@@ -26,6 +26,11 @@ namespace AgapeaDAW.Models
                 __mensajeAEnviar.IsBodyHtml = true;
                 __mensajeAEnviar.Body = cuerpoMensaje;
 
+                if (!String.IsNullOrEmpty(ficheroAdjunto))
+                {
+                    //hay fichero .pdf a enviar por email...
+                    __mensajeAEnviar.Attachments.Add(new Attachment(ficheroAdjunto, "application/pdf"));
+                }
                 _clienteSMTP.Send(__mensajeAEnviar);
                 return true;
             }
